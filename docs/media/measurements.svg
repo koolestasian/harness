@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="250" viewBox="0 0 1440 250" role="img" aria-labelledby="title desc">
+<title id="title">Measured workflow snapshot</title><desc id="desc">Historical baseline: 12 native turns, both coding repairs passed 6 of 6 checks, 4.06 millisecond median status latency over 50 warm reads. Separate repair validation recovered 3 of 3 known missing replies.</desc>
+<rect x="1" y="1" width="1438" height="248" rx="18" fill="#f3f6fb" stroke="#d6dfeb"/>
+<g font-family="Segoe UI,Arial,sans-serif"><text x="32" y="38" font-size="15" fill="#52647d" letter-spacing="1.5">OBSERVED OCTOBER 28, 2026 · WINDOWS / WSL2 · LOCAL INFERENCE OFF</text>
+<g stroke="#d6dfeb"><path d="M365 65V215M720 65V215M1075 65V215"/></g>
+<g fill="#153d76" font-size="56" font-weight="700"><text x="32" y="125">12</text><text x="397" y="125">6 / 6</text><text x="752" y="125">4.06 ms</text><text x="1107" y="125">3 / 3</text></g>
+<g fill="#1c2c44" font-size="21" font-weight="600"><text x="32" y="166">Native agent turns</text><text x="397" y="166">Checks, each repair</text><text x="752" y="166">Median status API</text><text x="1107" y="166">Missing replies recovered</text></g>
+<g fill="#52647d" font-size="16"><text x="32" y="198">Frozen workflow baseline</text><text x="397" y="198">One problem, two candidates</text><text x="752" y="198">50 warm loopback reads</text><text x="1107" y="198">Separate repair validation</text></g>
+</g></svg>

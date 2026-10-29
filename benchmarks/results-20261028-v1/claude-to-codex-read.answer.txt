@@ -1,0 +1,1 @@
+{"marker":"HANDOFF-3842ba8ca521","next_action":"Add offline regression coverage","project_id":"benchmark/repos/claude-to-codex","source_sha256":"63958605b9dd07f9465438b58eee8d9a478ece03a40a0a1d1f4ae72732ff22e7"}

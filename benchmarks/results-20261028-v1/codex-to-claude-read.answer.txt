@@ -1,0 +1,3 @@
+```json
+{"marker": "HANDOFF-d479d96ea2e1", "next_action": "Add offline regression coverage", "project_id": "benchmark/repos/codex-to-claude", "source_sha256": "56049fb72442e9d8e305cad4afcf082303011196bcb1c2a2da2a53dad26713a0"}
+```

@@ -1,0 +1,24 @@
+[
+  {
+    "provider": "claude",
+    "elapsed_s": 12.745,
+    "marker": "FOLLOWUP-READY-1",
+    "answer": "FOLLOWUP-READY-1\n\n**Preparation note (synthetic validation)**\n\n- **Commitment:** Noor said they would deliver a diagram by Friday, 2026-10-30. Today is Wednesday, 2026-10-28.\n- **Source:** Your message is the only source. As you asked, I didn't use any tools, so I haven't read a task record, recalled memory or contacted anyone.\n- **Still unknown:** which diagram it is (topic or format), what it's for, where it will be delivered, and whether Friday means the start or end of the day.\n- **Status:** Pending. Nothing about delivery has been checked.\n\n**Next action:** On Friday, 2026-10-30, check whether Noor's diagram has arrived. If it hasn't, ask them for a status update.",
+    "persisted_reply_matches_panel": true,
+    "cli_contained_full_answer": true,
+    "local": "off",
+    "session": "http://127.0.0.1:6767/c/f29ed7bc345146ce98531f5e20b66e4f",
+    "job_id": "4bd9576d8bc61b09"
+  },
+  {
+    "provider": "codex",
+    "elapsed_s": 14.48,
+    "marker": "PROJECT-READY-2",
+    "answer": "PROJECT-READY-2\n\nPatch is ready; tests remain unrun. Next action: run the required test suite and record the exact command and results.",
+    "persisted_reply_matches_panel": true,
+    "cli_contained_full_answer": true,
+    "local": "off",
+    "session": "http://127.0.0.1:6767/c/777fa191603f409085476448d462eed9",
+    "job_id": "d3fae77518b3ee6b"
+  }
+]

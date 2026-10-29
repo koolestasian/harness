@@ -1,0 +1,30 @@
+Run 2ef6b45216f04e20901ed4f652499fdd; review with: workbench outcome 2ef6b45216f04e20901ed4f652499fdd --help
+omnigent: Starting up…
+Restarting host daemon for 'local' (host identity changed).
+omnigent: Starting the local server…
+omnigent: Preparing your agent…
+omnigent: Connecting…
+omnigent: Launching your agent…
+Omnigent session: http://127.0.0.1:6767/c/adfe453e63f744daa11597f0e118be7b
+I fixed `token_cache.py`, and `test_public.py` passes. No other repository files were changed.
+
+**What changed:**
+- **One shared refresh:** the first caller that finds no valid token starts the refresh as its own task. Every later caller waits on that same task, so concurrent calls trigger only one refresh.
+- **Token reuse:** a token is reused while `expires_at > clock() + skew`. When `expires_at <= clock() + skew`, it counts as expired and is refreshed.
+- **Retry after an error:** when a refresh finishes, successfully or with an error, it is cleared. If it fails, every caller waiting on it gets the exception, and the next `get()` starts a new refresh.
+- **Cancellation:** every caller awaits the refresh through `asyncio.shield`. Cancelling any caller, including the one that started the refresh, does not cancel the refresh, so the other callers still get the token.
+- **No warning when nobody is waiting:** if every caller was cancelled and the refresh then fails, the error is marked as handled so asyncio doesn't log "Task exception was never retrieved".
+- The constructor `TokenCache(refresh, clock, skew=30)` and `async get()` are unchanged, and only the standard library (`asyncio`) is used.
+
+**Verification:**
+- `python -m unittest test_public -v` → `Ran 1 test … OK`.
+- I also ran a throwaway script, not added to the repo, at `/tmp/claude-1000/-home-user-agent-workbench-evidence-benchmark-20261028-v1-repos-claude-coding/1695f13b-c426-46c8-9524-383d8ad45768/scratchpad/extra.py`. It printed `ok` after checking:
+  - a retry works after a refresh error;
+  - a valid token is reused without another refresh;
+  - the token refreshes when `expires_at == clock() + skew`;
+  - with the starting caller and one waiter cancelled, another waiter still gets the new token from the single refresh.
+- `git status` shows only `M token_cache.py`. Nothing was committed.
+
+**Limits:**
+- If the refresh task itself is cancelled from outside, its waiters get a `CancelledError`.
+- A refresh that returns an already-expired token is handed back to the callers waiting on it, not retried in a loop.

@@ -1,0 +1,13 @@
+case,provider,elapsed_s,exit_code,timeout,content_accepted,cli_delivery_complete,end_to_end_accepted,reported_estimate_usd
+codex-sources,codex,20.08,0,False,False,True,False,0.0359848
+codex-networking,codex,21.214,0,False,True,True,True,0.0368008
+codex-coding,codex,44.395,0,False,True,True,True,0.097988
+claude-sources,claude,16.89,0,False,True,False,False,0.2774007
+claude-networking,claude,16.065,0,False,True,False,False,0.27615470000000003
+claude-coding,claude,35.927,0,False,True,True,True,0.3471759
+codex-to-claude-write,codex,33.231,0,False,True,True,True,0.0845664
+codex-to-claude-read,claude,15.852,0,False,True,True,True,0.2765752
+claude-to-codex-write,claude,16.364,0,False,True,False,True,0.2735771
+claude-to-codex-read,codex,10.251,0,False,True,True,True,0.0244336
+claude-live-research,claude,24.663,0,False,True,True,True,0.1974778
+codex-live-research,codex,28.265,0,False,True,True,True,

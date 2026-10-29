@@ -1,0 +1,6 @@
+I wrote `docs/handoff.md` and changed no other files. It records:
+- **Verification marker:** HANDOFF-3842ba8ca521
+- **Decision:** "cloud first, local manual"
+- **Next action:** "Add offline regression coverage". It is marked as not started.
+
+The file also notes the revision it was written against (`cf0a3b2` on `master`) and today's date, 2026-10-28.

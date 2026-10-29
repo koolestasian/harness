@@ -1,0 +1,86 @@
+[
+  {
+    "type": "function_call",
+    "name": "shell",
+    "arguments": "{\"command\": \"/bin/bash -lc \\\"pwd && rg --files -g 'PROTOCOL.md' -g '.agent/PROJECT.json' -g '.agent/tasks/*.json' -g 'token_cache.py' -g 'test_public.py' -g 'AGENTS.md'\\\"\", \"cwd\": \"/home/user/agent-workbench/evidence/benchmark-20261028-v1/repos/codex-coding\"}",
+    "output": null,
+    "call_id": "exec-2c578c58-e5e8-4a71-bb77-a65d6bdf3bc5"
+  },
+  {
+    "type": "function_call_output",
+    "name": null,
+    "arguments": null,
+    "output": "/home/user/agent-workbench/evidence/benchmark-20261028-v1/repos/codex-coding\ntest_public.py\ntoken_cache.py\n",
+    "call_id": "exec-2c578c58-e5e8-4a71-bb77-a65d6bdf3bc5"
+  },
+  {
+    "type": "function_call",
+    "name": "shell",
+    "arguments": "{\"command\": \"/bin/bash -lc \\\"sed -n '1,240p' token_cache.py && sed -n '1,300p' test_public.py && git status --short && git log -1 --oneline\\\"\", \"cwd\": \"/home/user/agent-workbench/evidence/benchmark-20261028-v1/repos/codex-coding\"}",
+    "output": null,
+    "call_id": "exec-099b2ea2-31c9-4d2a-a6e8-216ffcaef9e6"
+  },
+  {
+    "type": "function_call_output",
+    "name": null,
+    "arguments": null,
+    "output": "class TokenCache:\n    def __init__(self, refresh, clock, skew=30):\n        self.refresh = refresh\n        self.clock = clock\n        self.skew = skew\n        self.token = None\n        self.expires_at = 0\n\n    async def get(self):\n        if self.token is None or self.expires_at <= self.clock() + self.skew:\n            self.token, self.expires_at = await self.refresh()\n        return self.token\nimport asyncio, unittest\nfrom token_cache import TokenCache\nclass Public(unittest.IsolatedAsyncioTestCase):\n    async def test_concurrent(self):\n        count=0\n        async def refresh():\n            nonlocal count\n            count+=1\n            await asyncio.sleep(.01)\n            return 'fresh',1000\n        c=TokenCache(refresh,lambda:0)\n        self.assertEqual(await asyncio.gather(*[c.get() for _ in range(10)]), ['fresh']*10)\n        self.assertEqual(count,1)\nif __name__=='__main__': unittest.main()\nf8857f6 Freeze benchmark inputs\n",
+    "call_id": "exec-099b2ea2-31c9-4d2a-a6e8-216ffcaef9e6"
+  },
+  {
+    "type": "function_call",
+    "name": "apply_patch",
+    "arguments": "{\"changes\": [{\"path\": \"/home/user/agent-workbench/evidence/benchmark-20261028-v1/repos/codex-coding/token_cache.py\", \"kind\": {\"type\": \"update\", \"move_path\": null}, \"diff\": \"@@ -1 +1,4 @@\\n+import asyncio\\n+\\n+\\n class TokenCache:\\n@@ -7,6 +10,34 @@\\n         self.expires_at = 0\\n+        self._refresh_task = None\\n+        self._refresh_lock = asyncio.Lock()\\n \\n+    def _valid(self):\\n+        return (\\n+            self.token is not None\\n+            and self.expires_at > self.clock() + self.skew\\n+        )\\n+\\n+    async def _refresh(self):\\n+        token, expires_at = await self.refresh()\\n+        self.token = token\\n+        self.expires_at = expires_at\\n+        return token\\n+\\n     async def get(self):\\n-        if self.token is None or self.expires_at <= self.clock() + self.skew:\\n-            self.token, self.expires_at = await self.refresh()\\n-        return self.token\\n+        if self._valid():\\n+            return self.token\\n+\\n+        async with self._refresh_lock:\\n+            if self._valid():\\n+                return self.token\\n+\\n+            task = self._refresh_task\\n+            if task is None or task.done():\\n+                task = asyncio.create_task(self._refresh())\\n+                self._refresh_task = task\\n+\\n+        try:\\n+            return await asyncio.shield(task)\\n+        finally:\\n+            if self._refresh_task is task and task.done():\\n+                self._refresh_task = None\\n\"}]}",
+    "output": null,
+    "call_id": "exec-081021a5-d34c-4927-abfd-808f8fba0753"
+  },
+  {
+    "type": "function_call_output",
+    "name": null,
+    "arguments": null,
+    "output": "update /home/user/agent-workbench/evidence/benchmark-20261028-v1/repos/codex-coding/token_cache.py",
+    "call_id": "exec-081021a5-d34c-4927-abfd-808f8fba0753"
+  },
+  {
+    "type": "function_call",
+    "name": "shell",
+    "arguments": "{\"command\": \"/bin/bash -lc 'python -m unittest -v test_public.py'\", \"cwd\": \"/home/user/agent-workbench/evidence/benchmark-20261028-v1/repos/codex-coding\"}",
+    "output": null,
+    "call_id": "exec-417b2733-3c8b-42e8-be99-dd7c38a108c6"
+  },
+  {
+    "type": "function_call_output",
+    "name": null,
+    "arguments": null,
+    "output": "test_concurrent (test_public.Public.test_concurrent) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.016s\n\nOK\n",
+    "call_id": "exec-417b2733-3c8b-42e8-be99-dd7c38a108c6"
+  },
+  {
+    "type": "function_call",
+    "name": "shell",
+    "arguments": "{\"command\": \"/bin/bash -lc 'git diff --check && git diff -- token_cache.py && git status --short'\", \"cwd\": \"/home/user/agent-workbench/evidence/benchmark-20261028-v1/repos/codex-coding\"}",
+    "output": null,
+    "call_id": "exec-3d482bea-6485-438b-bd91-a52a1e2061a7"
+  },
+  {
+    "type": "function_call_output",
+    "name": null,
+    "arguments": null,
+    "output": "diff --git a/token_cache.py b/token_cache.py\nindex 2bd3c66..1fa3dd5 100644\n--- a/token_cache.py\n+++ b/token_cache.py\n@@ -1,3 +1,6 @@\n+import asyncio\n+\n+\n class TokenCache:\n     def __init__(self, refresh, clock, skew=30):\n         self.refresh = refresh\n@@ -5,8 +8,36 @@ class TokenCache:\n         self.skew = skew\n         self.token = None\n         self.expires_at = 0\n+        self._refresh_task = None\n+        self._refresh_lock = asyncio.Lock()\n+\n+    def _valid(self):\n+        return (\n+            self.token is not None\n+            and self.expires_at > self.clock() + self.skew\n+        )\n+\n+    async def _refresh(self):\n+        token, expires_at = await self.refresh()\n+        self.token = token\n+        self.expires_at = expires_at\n+        return token\n \n     async def get(self):\n-        if self.token is None or self.expires_at <= self.clock() + self.skew:\n-            self.token, self.expires_at = await self.refresh()\n-        return self.token\n+        if self._valid():\n+            return self.token\n+\n+        async with self._refresh_lock:\n+            if self._valid():\n+                return self.token\n+\n+            task = self._refresh_task\n+            if task is None or task.done():\n+                task = asyncio.create_task(self._refresh())\n+                self._refresh_task = task\n+\n+        try:\n+            return await asyncio.shield(task)\n+        finally:\n+            if self._refresh_task is task and task.done():\n+                self._refresh_task = None\n M token_cache.py\n",
+    "call_id": "exec-3d482bea-6485-438b-bd91-a52a1e2061a7"
+  },
+  {
+    "type": "function_call",
+    "name": "turn_diff",
+    "arguments": "{}",
+    "output": null,
+    "call_id": "codex_turn_diff_01a18461-8de2-7c02-8ebe-b57aeab5d38f"
+  },
+  {
+    "type": "function_call_output",
+    "name": null,
+    "arguments": null,
+    "output": "diff --git a/token_cache.py b/token_cache.py\nindex 2bd3c662a732b921a7cd0e7d78fa35f84c0de9d3..1fa3dd54309d260b2819bb1c8012f51b425b99d1\n--- a/token_cache.py\n+++ b/token_cache.py\n@@ -1,3 +1,6 @@\n+import asyncio\n+\n+\n class TokenCache:\n     def __init__(self, refresh, clock, skew=30):\n         self.refresh = refresh\n@@ -5,8 +8,36 @@\n         self.skew = skew\n         self.token = None\n         self.expires_at = 0\n+        self._refresh_task = None\n+        self._refresh_lock = asyncio.Lock()\n \n+    def _valid(self):\n+        return (\n+            self.token is not None\n+            and self.expires_at > self.clock() + self.skew\n+        )\n+\n+    async def _refresh(self):\n+        token, expires_at = await self.refresh()\n+        self.token = token\n+        self.expires_at = expires_at\n+        return token\n+\n     async def get(self):\n-        if self.token is None or self.expires_at <= self.clock() + self.skew:\n-            self.token, self.expires_at = await self.refresh()\n-        return self.token\n+        if self._valid():\n+            return self.token\n+\n+        async with self._refresh_lock:\n+            if self._valid():\n+                return self.token\n+\n+            task = self._refresh_task\n+            if task is None or task.done():\n+                task = asyncio.create_task(self._refresh())\n+                self._refresh_task = task\n+\n+        try:\n+            return await asyncio.shield(task)\n+        finally:\n+            if self._refresh_task is task and task.done():\n+                self._refresh_task = None\n",
+    "call_id": "codex_turn_diff_01a18461-8de2-7c02-8ebe-b57aeab5d38f"
+  }
+]

@@ -1,0 +1,3 @@
+```json
+{"command":"Browser: Open Integrated Browser","extension_required":false,"source_urls":["https://code.visualstudio.com/docs/debugtest/integrated-browser"],"retrieved_date":"2026-10-28","freshness_verified":true}
+```

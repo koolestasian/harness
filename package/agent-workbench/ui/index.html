@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
+<title>Workspace · Harness</title>
+<style>
+:root{color-scheme:light dark;--canvas:#fff;--surface:#fff;--group:#f5f5f7;--rail:#f0f0f3;--ink:#1d1d1f;--muted:#626268;--line:#d2d2d7;--field-line:#86868b;--hover:#e8e8ed;--press:#d8d8de;--accent:#0066cc;--accent-hover:#0055ad;--accent-pressed:#004999;--accent-soft:#e0ebfb;--on-accent:#fff;--success:#287343;--danger:#b3261e;--danger-soft:#fff0ef;--focus:#0071e3;--radius:8px;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+*{box-sizing:border-box}html{font-size:100%;scroll-padding-top:16px}body{margin:0;background:var(--canvas);color:var(--ink);font:1.0625rem/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit}button,a,summary{touch-action:manipulation}button{min-height:44px;cursor:pointer;padding:8px 16px;border:1px solid var(--line);border-radius:var(--radius);color:var(--ink);background:var(--group);font-weight:500}button:hover{background:var(--hover)}button:active{background:var(--press)}button:disabled{opacity:.5;cursor:not-allowed}
+a{color:var(--accent);text-underline-offset:3px}a:hover{text-decoration:underline}:where(button,a,summary,input,textarea,select):focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}.primary:active{background:var(--accent-pressed);border-color:var(--accent-pressed)}.quiet{background:transparent}.small{font-size:.9375rem;padding:6px 12px}.danger{color:var(--danger);border-color:var(--danger);background:var(--danger-soft)}
+[hidden]{display:none!important}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.skip{position:fixed;inset:8px auto auto 8px;z-index:100;background:var(--surface);width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%)}.skip:focus{width:auto;height:auto;padding:12px;overflow:visible;clip-path:none}
+.shell{display:grid;grid-template-columns:min(15rem,40vw) minmax(0,1fr);min-height:100vh}.rail{background:var(--rail);border-right:1px solid var(--line);padding:24px 16px;display:flex;flex-direction:column;height:100vh;position:sticky;top:0;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:8px;padding:0 12px;font-size:1.375rem;font-weight:600;letter-spacing:-.4px}.brand svg{width:22px;height:24px;flex-shrink:0}
+.project-label{font-size:.8125rem;color:var(--muted);margin:24px 12px 8px}.project-select{width:100%;padding:8px 28px 8px 12px;font-size:.9375rem;min-height:44px;background:var(--surface);border:1px solid var(--field-line);border-radius:var(--radius);color:var(--ink)}
+.add-project{border:0;background:transparent;color:var(--accent);text-align:left;margin:4px 0 24px;padding:8px 12px;font-size:.9375rem}.add-project:hover,.add-project:active{background:var(--accent-soft)}
+.nav{display:grid;gap:4px}.nav a{display:flex;gap:12px;align-items:center;min-height:44px;padding:8px 12px;border-radius:var(--radius);text-decoration:none;color:var(--ink);font-size:.9375rem}.nav a:hover{background:var(--group)}.nav a[aria-current=page]{background:var(--accent-soft);color:var(--accent);font-weight:500}.nav .icon{color:var(--accent)}
+.icon{width:19px;height:19px;flex-shrink:0;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.rail-bottom{margin-top:auto;padding:24px 12px 0;color:var(--muted);font-size:.8125rem}.rail-bottom p{display:none}.rail-status{display:flex;align-items:center;gap:8px}.dot{width:6px;height:6px;background:var(--muted);border-radius:50%;display:inline-block;flex-shrink:0}
+main{min-width:0;container-type:inline-size}.topbar{min-height:64px;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:8px 28px;border-bottom:1px solid var(--line);font-size:.9375rem;background:var(--surface)}
+.location{display:flex;gap:16px;align-items:center;min-width:0}.sidebar-toggle{display:grid;place-items:center;width:44px;min-width:44px;padding:0;background:transparent;border:0}.breadcrumb{display:flex;align-items:center;gap:12px;min-width:0;color:var(--muted)}.breadcrumb strong{color:var(--ink);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top-status{display:flex;align-items:center;gap:8px;min-height:44px;margin-left:auto;text-decoration:none;color:var(--muted);white-space:nowrap}
+.shell.sidebar-hidden{grid-template-columns:minmax(0,1fr)}.sidebar-hidden .rail{display:none}.content{max-width:1180px;margin:0 auto;padding:24px 32px 48px}.pagehead{margin-bottom:24px}
+h1{overflow-wrap:break-word;font-size:1.75rem;font-weight:600;letter-spacing:-.65px;line-height:1.25;margin:0 0 8px}h2{font-size:1.25rem;font-weight:600;letter-spacing:-.2px;margin:0 0 8px}p{color:var(--muted);margin:0 0 20px}.pagehead p{font-size:1.0625rem;margin:0}.path{font-size:.8125rem;line-height:1.6;color:var(--muted);overflow-wrap:anywhere;margin-top:8px}
+.composer{background:var(--surface);border:1px solid var(--field-line);border-radius:12px;overflow:hidden}.composer:focus-within{border-color:var(--accent)}.composer-head{padding:8px 18px 0;min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:12px}.composer-head h2{font-size:1.0625rem;margin:0}
+.draft-actions{display:flex;gap:8px}#clearDraft,#undoDraft{font-size:.9375rem;padding:4px 8px;border:0;color:var(--accent)}
+#prompt{width:100%;border:0;border-radius:0;background:transparent;color:var(--ink);padding:16px 18px;min-height:104px;resize:vertical;display:block;line-height:1.6;font-size:1.0625rem}#prompt::placeholder{color:var(--muted)}#prompt:focus-visible{outline:0;box-shadow:inset 3px 0 var(--focus)}
+.composer-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 12px;border-top:1px solid var(--line)}.agent-picker{display:flex;align-items:center;gap:8px;min-width:0}.agent-picker label{font-size:.9375rem;color:var(--muted);margin:0}.agent-picker select{font-size:.9375rem;padding:8px 28px 8px 12px;max-width:15rem;width:auto;min-height:44px;background:var(--group);border-color:transparent}
+.submit-group{display:flex;align-items:center;gap:12px}.shortcut{font-size:.8125rem;color:var(--muted);white-space:nowrap}#run{min-width:112px;font-size:1.0625rem}.run-context{display:flex;flex-wrap:wrap;align-items:center;column-gap:12px;font-size:.9375rem;color:var(--muted);margin:12px 0 0;min-height:24px}.run-context a{display:inline-flex;align-items:center;min-height:44px}
+.task-error{font-size:1.0625rem;color:var(--danger);border-left:3px solid var(--danger);padding:8px 12px;margin:12px 0 0}
+.usage-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:24px;row-gap:4px;margin:20px 0 0;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.usage-account{min-width:0}.usage-title{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px;font-size:.9375rem}.usage-title strong{font-weight:600}.usage-title a{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-size:.8125rem;overflow-wrap:anywhere}
+.usage-line{margin-top:8px}.usage-label{display:flex;justify-content:space-between;gap:8px;font-size:.8125rem;margin-bottom:4px;flex-wrap:wrap}.usage-label span:last-child{font-weight:500;white-space:nowrap}.usage-account p{font-size:.8125rem;color:var(--muted);margin:4px 0 0;overflow-wrap:anywhere}
+.usage-account progress{display:block;width:100%;height:8px;border:0;border-radius:4px;overflow:hidden;background:var(--line);appearance:none}.usage-account progress::-webkit-progress-bar{background:var(--line);border-radius:4px}.usage-account progress::-webkit-progress-value{background:var(--success);border-radius:4px}.usage-account progress::-moz-progress-bar{background:var(--success);border-radius:4px}.usage-account progress.low::-webkit-progress-value{background:var(--danger)}.usage-account progress.low::-moz-progress-bar{background:var(--danger)}
+.usage-foot{grid-column:1/-1;color:var(--muted);font-size:.8125rem}
+.session-section{margin-top:24px}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.section-heading h2{margin:0;font-size:1.25rem}.count{font-size:.8125rem;font-weight:400;font-variant-numeric:tabular-nums;color:var(--muted);margin-left:8px}
+.session-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.search{width:176px;font-size:.9375rem;padding:8px 12px;background:var(--group)}#sessionFilter,#sessionScope{width:auto;font-size:.9375rem;padding:8px 28px 8px 12px;background:var(--group);min-height:44px}
+.session-row{--pad:16px;position:relative;border-bottom:1px solid var(--line)}
+.session-row{--open:4.5rem;--status:6.5rem}.session-summary{display:grid;grid-template-columns:minmax(0,1fr) var(--status) 16px;align-items:start;gap:12px;list-style:none;cursor:pointer;padding:16px var(--pad);font-size:.9375rem;min-height:76px;border-radius:var(--radius)}.session-row.has-open .session-summary{grid-template-columns:minmax(0,1fr) var(--open) var(--status) 16px}.session-row.has-open .session-state{grid-column:3}.session-row.has-open .chevron{grid-column:4}.session-summary::-webkit-details-marker{display:none}.session-summary:hover{background:var(--group)}.session-summary:active{background:var(--accent-soft)}
+.session-heading{min-width:0}.session-line{display:flex;align-items:baseline;gap:8px;min-width:0}.session-heading strong{font-weight:500;font-size:1.0625rem;display:block;min-width:0;overflow-wrap:break-word}.session-repeat{flex-shrink:0;font-size:.8125rem;font-variant-numeric:tabular-nums;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 8px}.session-project{font-size:.8125rem;color:var(--muted);display:block;overflow-wrap:break-word;margin-top:4px}
+.session-state{font-size:.8125rem;display:flex;align-items:center;gap:8px;min-height:44px}.session-state:before{content:'';width:6px;height:6px;background:var(--muted);border-radius:50%;flex-shrink:0}
+.session[data-state=done] .session-state{color:var(--success)}.session[data-state=done] .session-state:before{background:var(--success)}.session[data-state=failed] .session-state{color:var(--danger)}.session[data-state=failed] .session-state:before{background:var(--danger)}.session[data-state=running] .session-state{color:var(--accent)}.session[data-state=running] .session-state:before{background:var(--accent)}
+.session-time{font-variant-numeric:tabular-nums}.session-open{position:absolute;top:16px;right:calc(var(--pad) + 16px + 12px + var(--status) + 12px);display:inline-flex;align-items:center;justify-content:center;width:var(--open);min-height:44px;padding:0 8px;font-size:.9375rem;text-decoration:none;border-radius:var(--radius)}.session-open:hover{text-decoration:underline}.session-open span{margin-left:4px}.chevron{color:var(--muted);font-size:1.0625rem;display:flex;align-items:center;justify-content:center;min-height:44px}.session[open] .chevron{transform:rotate(90deg)}
+.session-body{padding:0 var(--pad) 24px}.session-actions{display:flex;gap:12px;align-items:center;margin:0 0 16px;font-size:.9375rem}.session-answer{white-space:pre-wrap;overflow-wrap:break-word;max-height:500px;overflow:auto;font-size:1.0625rem;line-height:1.7;max-width:80ch}
+.raw-details{margin-top:12px}.raw-details summary{display:list-item;min-height:44px;align-content:center;font-size:.8125rem;color:var(--muted);cursor:pointer}.output{font:.8125rem/1.7 var(--mono);white-space:pre-wrap;overflow-wrap:break-word;max-height:320px;overflow:auto;background:var(--group);padding:16px;border-radius:var(--radius)}
+.empty{padding:32px 16px;border-bottom:1px solid var(--line)}.empty strong{font-weight:500;font-size:1.0625rem}.empty p{font-size:.9375rem;margin:8px 0 0}.empty button{margin-top:16px}
+.split{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:48px;align-items:start}.settings-section{padding:24px 0;border-top:1px solid var(--line)}.settings-section:first-child,.split>.settings-section{padding-top:0;border-top:0}.settings-section p{font-size:.9375rem;margin-bottom:20px}
+label,.label{display:block;font-size:.9375rem;font-weight:500;margin-bottom:8px}input,select,textarea{width:100%;border:1px solid var(--field-line);border-radius:var(--radius);padding:8px 12px;background:var(--surface);color:var(--ink);min-width:0}input,select{min-height:44px}input::placeholder{color:var(--muted)}
+.field{margin-bottom:20px}.row{display:flex;align-items:center;gap:12px}.row>*{min-width:0}.row input{flex:1}.row button{flex-shrink:0}.hint{font-size:.9375rem;line-height:1.5;color:var(--muted);margin:8px 0 0}
+.statusrow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line);font-size:.9375rem}.statusrow b{font-weight:500;text-align:right}.statusrow span{color:var(--muted)}.good{color:var(--success)}
+.links{display:flex;gap:16px;flex-wrap:wrap;font-size:.9375rem;margin-top:12px}.links a{display:inline-flex;align-items:center;min-height:44px}.notice{font-size:.9375rem;color:var(--muted);margin:16px 0 0}
+.local-state{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:20px 0}.local-state strong{font-size:1.375rem;font-weight:500}.local-state button{font-size:1.0625rem}
+.versionlist{font-size:.8125rem;font-variant-numeric:tabular-nums;color:var(--muted)}.versionlist div{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding:8px 0}
+dialog{width:min(480px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;border:1px solid var(--line);border-radius:12px;padding:28px;background:var(--surface);color:var(--ink);box-shadow:0 16px 48px #0002}dialog::backdrop{background:#0005}dialog h2{font-size:1.25rem;margin-bottom:20px}.dialog-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:24px}
+.toast{position:fixed;bottom:max(24px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:var(--ink);color:var(--canvas);padding:12px 20px;border-radius:12px;font-size:1.0625rem;max-width:calc(100vw - 32px);z-index:50;box-shadow:0 4px 20px #0002}.toast.error{background:var(--danger);color:var(--on-accent)}.toast button{flex-shrink:0;min-width:44px;background:transparent;color:inherit;border-color:currentColor}.toast button:hover,.toast button:active{background:#0003}
+.connection-error{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;font-size:.9375rem;color:var(--danger);border-bottom:1px solid var(--line);padding:8px 28px}
+@media(max-width:1100px){.section-heading{align-items:flex-start;flex-direction:column;gap:12px}.session-tools{width:100%}.search{flex:1;min-width:120px}.shortcut{display:none}}
+@media(max-width:800px){.split{grid-template-columns:1fr;gap:32px}.shell{grid-template-columns:min(12rem,40vw) minmax(0,1fr)}.rail{padding:24px 12px}.content{padding:24px}.topbar{padding:8px 20px}}
+@media(max-width:680px){.usage-strip{grid-template-columns:1fr;gap:12px}.usage-account{display:grid;grid-template-columns:minmax(7rem,.85fr) minmax(0,1.8fr);gap:0 12px}.usage-title{grid-column:1;grid-row:1/4;display:block;font-size:1rem;overflow-wrap:anywhere}.usage-title a{display:flex;padding:0;font-size:.875rem}.usage-line,.usage-account>p{grid-column:2}.usage-line{margin-top:4px}.usage-account p{margin-top:4px}
+.session-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}#sessionSearch{grid-column:1/-1;width:100%}#sessionScope,#sessionFilter{width:100%;padding-right:22px}}
+@media(max-width:560px){.shell,.shell.sidebar-hidden{display:block}.rail,.sidebar-hidden .rail{display:flex;position:static;height:auto;padding:8px 16px;flex-direction:row;flex-wrap:wrap;gap:8px 12px;border-right:0;border-bottom:1px solid var(--line)}
+.brand{font-size:1.25rem;gap:8px;padding:0;flex:1;min-width:7.5rem}.brand svg{width:18px}.project-label,.rail-bottom,.sidebar-toggle{display:none}.project-select{flex:1;flex-basis:10rem;max-width:100%;font-size:.9375rem}.add-project{flex-basis:100%;margin:0;padding:4px 0;min-height:44px}
+.nav{display:flex;flex-wrap:wrap;flex-basis:100%;gap:8px}.nav a{flex:1 1 7rem;justify-content:center;padding:8px 4px;gap:0;min-width:0;font-size:.9375rem}.nav .icon{display:none}
+.topbar{min-height:56px;padding:4px 20px;gap:12px}.location{flex:1;min-width:0}.breadcrumb{flex:1;gap:0}.top-status{font-size:.8125rem}.content{padding:16px 20px 40px}.pagehead{margin-bottom:16px}
+.composer-head{padding:8px 16px 0;flex-wrap:wrap}#prompt{padding:16px;min-height:112px;font-size:1.0625rem}.composer-bar{padding:8px;flex-wrap:wrap;row-gap:12px;column-gap:8px}.agent-picker{flex:1;gap:8px}.agent-picker label{font-size:.9375rem}.agent-picker select{flex:1;width:auto;min-width:90px;max-width:100%}.submit-group{margin-left:auto}#run{min-width:112px}
+.session-section{margin-top:20px}.session-row{--pad:0px}.session-summary{padding-top:16px;padding-bottom:16px}.row{flex-wrap:wrap}.row input{flex-basis:180px}.local-state{flex-wrap:wrap}.connection-error{padding:12px 20px}.path{font-size:.875rem}.dialog-actions{flex-wrap:wrap}.dialog-actions button{flex:1}}
+@media(prefers-color-scheme:dark){:root{--canvas:#1c1c1e;--surface:#242426;--group:#2c2c2e;--rail:#202022;--ink:#f5f5f7;--muted:#aeaeb6;--line:#48484d;--field-line:#7c7c86;--hover:#3a3a3c;--press:#48484d;--accent:#80b7ff;--accent-hover:#a0caff;--accent-soft:#233e5d;--on-accent:#10243b;--success:#7ad695;--danger:#ff9b92;--danger-soft:#462a2a;--focus:#9cc7ff}.primary{background:#0a64cf;color:#fff;border-color:#0a64cf}.primary:hover{background:#0758b8;color:#fff;border-color:#0758b8}.primary:active{background:#064c9f;color:#fff;border-color:#064c9f}}
+@media(prefers-contrast:more){:root{--line:#737378;--field-line:#626267;--muted:#454549}.session-summary,.nav a{border:1px solid transparent}.nav a[aria-current=page]{border-color:var(--accent)}}
+@media(prefers-color-scheme:dark) and (prefers-contrast:more){:root{--line:#a4a4ad;--field-line:#b8b8c0;--muted:#d3d3d9}}
+@media(forced-colors:active){.usage-account progress{appearance:auto}.primary,.nav a[aria-current=page]{border:2px solid ButtonText}.dot,.session-state:before{background:CanvasText}}
+@media(prefers-reduced-motion:no-preference){button,a{transition:background-color .12s,color .12s}}
+
+@container(max-width:45rem){.usage-strip{grid-template-columns:1fr}.usage-account{display:grid;grid-template-columns:minmax(7rem,.85fr) minmax(0,1.8fr);gap:0 12px}.usage-title{display:block;grid-column:1;grid-row:1/4}.usage-title a{display:flex;padding:0;white-space:normal}.usage-line,.usage-account>p{grid-column:2}.section-heading{flex-direction:column;align-items:stretch}.session-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}#sessionSearch{width:100%;grid-column:1/-1}#sessionScope,#sessionFilter{width:100%;min-width:0}.split{grid-template-columns:1fr;gap:32px}.composer-bar{flex-wrap:wrap}.agent-picker{flex-wrap:wrap}.submit-group{margin-left:auto}.shortcut{display:none}}
+@container(max-width:20rem){.usage-account{display:block}.usage-title{display:flex;gap:8px}.usage-title a{margin-left:auto}.versionlist div{flex-wrap:wrap}.top-status{white-space:normal}}
+
+.model-controls{display:flex;flex-wrap:wrap;gap:16px;padding:12px 18px;border-top:1px solid var(--line);background:var(--group)}.model-controls .field{margin:0;flex:2 1 160px}.model-controls .effort-field{flex:1 1 100px}.model-controls .hint{font-size:.875rem}.model-actions{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+/* ws-status:begin */
+:root{--attention:#8a5a00}
+@media(prefers-color-scheme:dark){:root{--attention:#ffc266}}
+.top-status[data-state=starting],.top-status[data-state=ready]{color:var(--attention)}.top-status[data-state=starting] .dot,.top-status[data-state=ready] .dot{background:var(--attention)}.top-status[data-state=starting] .dot{display:none}
+.gpu-spinner{display:none;width:12px;height:12px;border:2px solid var(--attention);border-right-color:transparent;border-radius:50%;flex-shrink:0}.top-status[data-state=starting] .gpu-spinner{display:inline-block}
+@keyframes gpu-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:no-preference){.gpu-spinner{animation:gpu-spin .9s linear infinite}}
+#freeGpu{white-space:nowrap}
+.rail-status .dot{width:8px;height:8px}.rail-status .dot[data-connected=true]{background:var(--success)}.rail-status .dot[data-connected=false]{background:var(--danger)}
+.connection-error span{min-width:0;overflow-wrap:anywhere}.connection-error button{color:var(--ink)}
+@media(max-width:560px){#freeGpu{padding:8px 12px}.top-status{gap:8px}}
+@media(forced-colors:active){.rail-status .dot[data-connected],.top-status .dot{background:CanvasText}.gpu-spinner{border-color:CanvasText;border-right-color:transparent}}
+/* ws-status:end */
+/* ws-composer:begin */
+.run-context button{min-height:44px;padding:8px 12px;font-size:.9375rem}#quotaWarning{flex-basis:100%;margin:8px 0 0;padding:8px 12px;border-left:3px solid var(--muted);color:var(--ink)}
+/* ws-composer:end */
+/* ws-sessions:begin */
+.session-answer.is-running{max-width:none}.session-running{display:block;font-weight:500;font-variant-numeric:tabular-nums}.session-latest{display:block;margin-top:4px;font-size:.9375rem;line-height:1.5;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.session-progress{display:block;width:100%;max-width:24rem;height:4px;margin-top:12px;border:0;border-radius:2px;appearance:none;overflow:hidden;background:linear-gradient(90deg,transparent,var(--accent),transparent) no-repeat var(--line);background-size:40% 100%;animation:session-slide 1.4s ease-in-out infinite}.session-progress::-webkit-progress-bar{background:transparent}.session-progress::-moz-progress-bar{background:transparent}
+@keyframes session-slide{from{background-position:-60% 0}to{background-position:160% 0}}
+#showMoreSessions{display:block;margin:16px auto 0;min-width:160px}
+@container(max-width:45rem){.session-summary{grid-template-columns:minmax(0,1fr) 16px}.session-row.has-open .session-summary{grid-template-columns:minmax(0,1fr) var(--open) 16px}.session-state,.session-row.has-open .session-state{grid-column:1/-1;grid-row:2;min-height:0}.chevron,.session-row.has-open .chevron{grid-column:-2;grid-row:1}.session-open{right:calc(var(--pad) + 16px + 12px)}}
+@media(prefers-reduced-motion:reduce){.session-progress{animation:none;background-position:50% 0}}
+@media(forced-colors:active){.session-progress{appearance:auto;animation:none}}
+/* ws-sessions:end */
+/* ws-a11y:begin */
+.agent-picker select{border-color:var(--field-line)}
+.danger:hover{background:color-mix(in srgb,var(--danger) 14%,var(--surface))}.danger:active{background:color-mix(in srgb,var(--danger) 24%,var(--surface))}#clearDraft:hover,#undoDraft:hover,#clearDraft:active,#undoDraft:active{background:var(--accent-soft)}
+/* ws-a11y:end */
+/* ws-polish:begin */
+#main[data-stale=true] :is(.usage-strip,#sessions){--ink:var(--muted);filter:grayscale(1)}
+#main[data-stale=true] .usage-account progress,#main[data-stale=true] .session-state:before{opacity:.6}
+@media(forced-colors:active){#main[data-stale=true] :is(.usage-strip,#sessions){filter:none}}
+.topbar{flex-wrap:wrap;row-gap:0}.location{flex:1 1 auto}.top-status{flex:1 1 auto;min-width:0;white-space:normal;justify-content:flex-end;text-align:right}#freeGpu{flex-shrink:0;margin-left:auto}
+@container(max-width:45rem){.usage-strip{row-gap:16px}}
+@media(max-width:360px){.session-tools{grid-template-columns:minmax(0,1fr)}}
+/* ws-polish:end */
+/* ws-models:begin */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px}.tabs [role=tab]{border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:var(--muted);padding:8px 12px}.tabs [role=tab]:hover{color:var(--ink);background:transparent}.tabs [role=tab][aria-selected=true]{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.model-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}.model-row>div{min-width:0}.model-row button{flex-shrink:0}.model-name{font-weight:500;overflow-wrap:anywhere}
+.model-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;font-size:.8125rem;color:var(--muted);margin-top:4px}
+.pill{display:inline-flex;align-items:center;font-size:.75rem;font-weight:500;line-height:1.6;border:1px solid currentColor;border-radius:999px;padding:0 8px;white-space:nowrap}.pill.fits{color:var(--success)}.pill.tight{color:var(--attention)}.pill.too_large{color:var(--danger)}.pill.active{color:var(--accent)}
+.discover-search{display:flex;gap:8px;margin-bottom:12px}.discover-search input{flex:1}
+.discover-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:32px;align-items:start}.repo-list{display:grid;gap:2px;max-height:68vh;overflow:auto;padding:2px}
+.repo{display:block;width:100%;text-align:left;background:transparent;border:0;padding:8px 12px;font-weight:400}.repo[aria-pressed=true]{background:var(--accent-soft)}.repo strong{display:block;font-weight:500;overflow-wrap:anywhere}
+#repoDetail h2{overflow-wrap:anywhere;margin-bottom:4px}#repoDetail>.hint{margin-bottom:8px}#repoDetail .links{margin:0 0 8px}
+.download-panel{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:24px;background:var(--group)}.download-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.download-head strong{font-weight:500;overflow-wrap:anywhere;min-width:0}.download-head div{display:flex;gap:8px}
+.download-panel progress{display:block;width:100%;height:8px;margin-top:8px;border:0;border-radius:4px;overflow:hidden;background:var(--line);appearance:none}.download-panel progress::-webkit-progress-bar{background:var(--line)}.download-panel progress::-webkit-progress-value{background:var(--accent)}.download-panel progress::-moz-progress-bar{background:var(--accent)}
+@container(max-width:45rem){.discover-split{grid-template-columns:1fr}.repo-list{max-height:40vh}.model-row{flex-wrap:wrap}}
+@media(forced-colors:active){.download-panel progress{appearance:auto}.tabs [role=tab][aria-selected=true]{border-bottom-color:Highlight}}
+/* ws-models:end */
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="shell">
+<aside class="rail" id="sidebar" aria-label="Sidebar">
+<div class="brand"><svg viewBox="0 0 24 26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2v22M20 2v22M4 9h16M4 17h16"/></svg>Harness</div>
+<label class="project-label" for="project">Project</label>
+<select id="project" class="project-select" aria-describedby="projectPathDisplay"><option value="">Loading projects…</option></select>
+<button class="add-project" id="addProject">Add Project…</button>
+<nav class="nav" aria-label="Main navigation">
+<a href="#workspace" data-view="workspace" aria-current="page"><svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M3 7h14M7 7v10"/></svg>Workspace</a>
+<a href="#models" data-view="models"><svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="m10 2 7 4v8l-7 4-7-4V6zM3 6l7 4 7-4M10 10v8"/></svg>Models</a>
+<a href="#connections" data-view="connections"><svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><path d="m8 12 4-4M7 13l-1 1a3 3 0 0 1-4-4l4-4a3 3 0 0 1 4 0m0 8a3 3 0 0 0 4 0l4-4a3 3 0 0 0-4-4l-1 1"/></svg>Connections</a>
+<a href="#diagnostics" data-view="diagnostics"><svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="10" rx="2"/><path d="M7 17h6M10 14v3M6 9h2l1-2 2 4 1-2h2"/></svg>System</a>
+</nav>
+<div class="rail-bottom"><div class="rail-status" role="status"><span class="dot" aria-hidden="true"></span><span id="panelStatus">Connecting…</span></div></div>
+</aside>
+<main id="main" tabindex="-1">
+<header class="topbar"><div class="location"><button id="toggleSidebar" class="sidebar-toggle" aria-controls="sidebar" aria-expanded="true" aria-label="Hide Sidebar" title="Hide Sidebar"><svg class="icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="3" width="16" height="14" rx="2"/><path d="M7 3v14"/></svg></button><div class="breadcrumb"><strong id="viewCrumb">Workspace</strong></div></div><a class="top-status" href="#diagnostics" id="topGpu"><span class="dot" aria-hidden="true"></span><span id="gpuSummary">Local Model off</span></a></header>
+<div id="connectionError" class="connection-error" role="status" hidden><span id="connectionMessage">Can’t reach Harness.</span><button id="retryConnection" type="button" class="small">Try Again</button></div>
+<div class="content">
+<section id="workspace" class="view" aria-labelledby="workspaceTitle">
+<div class="pagehead"><h1 id="workspaceTitle">Workspace</h1><div class="path" id="projectPathDisplay"></div></div>
+<form id="taskForm">
+<div class="composer">
+<div class="composer-head"><h2><label for="prompt" style="margin:0;font:inherit">New Task</label></h2><div class="draft-actions"><button id="clearDraft" type="button" class="small quiet" hidden>Clear Draft</button><button id="undoDraft" type="button" class="small quiet" hidden>Undo</button></div></div>
+<textarea id="prompt" required maxlength="16000" placeholder="Describe a task" aria-describedby="runHint"></textarea>
+<div class="model-controls"><div class="field"><label for="taskModel">Model</label><select id="taskModel"><option value="">Provider default</option></select><div class="model-actions"><button type="button" class="small quiet" id="reloadTaskModels">Refresh models</button><button type="button" class="small" id="applyLocalModel" hidden>Use this local model</button><a id="browseModels" href="#models" hidden>Browse and download models</a></div><p class="hint" id="taskModelHint" aria-live="polite">Choose an agent to see its models.</p></div><div class="field effort-field"><label for="taskEffort">Thinking effort</label><select id="taskEffort"><option value="">Default</option></select><p class="hint" id="effortHint">Higher effort can take longer. Applies to the next task.</p></div></div>
+<div class="composer-bar"><div class="agent-picker"><label for="agent">Agent</label><select id="agent"><option value="codex">Codex</option><option value="claude">Claude</option><option value="cloud">Hosted Model</option><option value="local">Local Model</option></select></div><div class="submit-group"><span id="shortcut" class="shortcut">Ctrl ↵</span><button class="primary" id="run" type="submit" disabled>Start Task</button></div></div>
+</div>
+<p id="taskError" class="task-error" role="alert" hidden></p><div class="run-context" role="status"><span id="runHint">Runs with your Codex account.</span><a id="agentSetup" href="#connections" hidden>Open Connections</a><button id="checkAuth" type="button" class="small" hidden>Check Again</button><button id="startLocalInline" type="button" class="small" hidden>Start Local Model…</button><div id="quotaWarning" role="status" hidden></div></div>
+</form>
+<section class="usage-strip" aria-label="Agent usage limits"><div id="homeCodex" class="usage-account"></div><div id="homeClaude" class="usage-account"></div><div id="homeCloud" class="usage-account"></div><div class="usage-foot"><span id="homeUsageTime">Checking usage…</span></div></section>
+<section class="session-section" aria-labelledby="sessionsTitle">
+<div class="section-heading"><h2 id="sessionsTitle">Sessions <span id="taskCount" class="count">0</span></h2><div class="session-tools"><label class="sr-only" for="sessionSearch">Search sessions</label><input id="sessionSearch" class="search" type="search" placeholder="Find a task" autocomplete="off"><label class="sr-only" for="sessionScope">Session project</label><select id="sessionScope"><option value="current">This Project</option><option value="all">All Projects</option></select><label class="sr-only" for="sessionFilter">Filter sessions</label><select id="sessionFilter"><option value="all">All Statuses</option><option value="active">Active</option><option value="done">Completed</option><option value="failed">Failed</option></select></div></div>
+<div id="sessions"><div class="empty"><strong>Loading sessions…</strong></div></div>
+</section>
+</section>
+<section id="models" class="view" aria-labelledby="modelsTitle" hidden>
+<div class="pagehead"><h1 id="modelsTitle">Models</h1><p>Local models for this PC. Downloading or choosing a model never starts the GPU.</p></div>
+<div id="downloadPanel" class="download-panel" hidden><div class="download-head"><strong id="downloadName"></strong><div><button id="downloadAction" type="button" class="small">Cancel</button><button id="downloadClose" type="button" class="small quiet" hidden>Close</button></div></div><progress id="downloadBar" max="100" value="0" aria-label="Download progress"></progress><p id="downloadText" class="hint"></p></div>
+<div class="tabs" role="tablist" aria-label="Model views"><button type="button" role="tab" id="tabLibrary" aria-controls="library" aria-selected="true">Downloaded <span id="libraryCount" class="count">0</span></button><button type="button" role="tab" id="tabDiscover" aria-controls="discover" aria-selected="false" tabindex="-1">Discover</button></div>
+<div id="library" role="tabpanel" aria-labelledby="tabLibrary"><p id="libraryHint" class="hint"></p><div id="libraryList"></div></div>
+<div id="discover" role="tabpanel" aria-labelledby="tabDiscover" hidden>
+<form id="discoverForm" class="discover-search" role="search"><label class="sr-only" for="discoverQuery">Search models</label><input id="discoverQuery" type="search" placeholder="Search Hugging Face: qwen, gemma, llama…" autocomplete="off"><button id="discoverButton" type="submit">Search</button></form>
+<div class="discover-split"><div><p id="discoverHint" class="hint" aria-live="polite"></p><div id="repoList" class="repo-list"></div></div><div id="repoDetail"><p class="hint">Choose a model to see its downloads.</p></div></div>
+</div>
+</section>
+<section id="connections" class="view" aria-labelledby="connectionsTitle" hidden>
+<div class="pagehead"><h1 id="connectionsTitle">Connections</h1><p>Manage accounts and models.</p></div>
+<div class="split">
+<div class="settings-section"><h2>Hosted Model</h2><p>Choose a provider and model.</p>
+<div class="field"><label for="provider">Provider</label><select id="provider"><option value="openrouter">OpenRouter</option><option value="opencode">OpenCode Console</option></select><p class="hint" id="providerHint">Requests are billed by your provider.</p></div>
+<div class="field"><label for="apiKey">API Key</label><input id="apiKey" type="password" autocomplete="off" placeholder="Enter an API key"><p class="hint" id="keyHint">Stored privately on this computer.</p></div>
+<div class="field"><label for="model">Model</label><div class="row"><input id="model" list="modelList" placeholder="Model ID" autocomplete="off"><button id="loadModels" type="button" class="small">Load Models</button></div><datalist id="modelList"></datalist><p class="hint" id="modelHint">Choose Load Models or enter a model ID.</p></div>
+<p id="providerError" data-action-error class="task-error" role="alert" hidden></p><button class="primary" id="saveProvider" disabled>Save Connection</button>
+<div class="links"><a id="getKey" href="https://openrouter.ai/settings/keys" target="_blank" rel="noreferrer">Get an API Key ↗</a><a id="providerAccount" href="https://openrouter.ai/settings/credits" target="_blank" rel="noreferrer">Credits and Limits ↗</a></div>
+<p class="notice">Prompts sent to hosted models follow the selected provider’s privacy terms and billing rules.</p>
+</div>
+<div><div class="settings-section"><h2>Accounts</h2><p>Use the accounts already signed in.</p><div class="statusrow"><span>Codex</span><b id="codexStatus">Checking…</b></div><div class="statusrow"><span>Claude</span><b id="claudeStatus">Checking…</b></div><div class="statusrow"><span>Hosted Model</span><b id="cloudStatus">Checking…</b></div><button class="small quiet" style="margin-top:18px" id="refreshAccounts">Refresh Status</button><p class="hint">Open a session to sign in or review permissions.</p></div>
+<div class="settings-section"><h2>Project Memory</h2><div class="statusrow"><span>Shared Memory</span><b id="memoryStatus">Checking…</b></div><p class="hint">Every agent except Local Model can use shared project context. Local Model sessions have no memory or web tools attached.</p></div></div>
+</div>
+</section>
+<section id="diagnostics" class="view" aria-labelledby="systemTitle" hidden>
+<div class="pagehead"><h1 id="systemTitle">System</h1><p>Manage local models and check connections.</p></div>
+<div class="split"><div>
+<div class="settings-section"><h2>Local Model</h2><div class="local-state"><strong id="gpuState">Off</strong><button id="gpuToggle" disabled>Start Local Model…</button></div><p id="gpuHint">Uses most of the 16 GB GPU. Stop it before gaming.</p></div>
+<div class="settings-section"><h2>Health Check</h2><p>Check accounts, tools, and memory without starting inference.</p><button id="doctor">Run Health Check</button><p class="hint">View results in Sessions.</p></div>
+</div><div class="settings-section"><h2>Installed Versions</h2><div id="versions" class="versionlist"></div><p class="hint">Updates are installed manually.</p></div></div>
+</section>
+</div>
+</main>
+</div>
+<dialog id="projectDialog" aria-labelledby="dialogTitle"><h2 id="dialogTitle">Add a Project</h2><form id="projectForm"><div class="field"><label for="projectPath">Project Folder</label><input id="projectPath" required aria-describedby="projectPathHint" placeholder="/home/user/projects/my-app"><p class="hint" id="projectPathHint">Enter the path to a Git repository.</p></div><div class="field"><label for="projectId">Project ID (Optional)</label><input id="projectId" placeholder="personal/my-app"><p class="hint">Use the same ID on each device.</p></div><p id="projectError" data-action-error class="task-error" role="alert" hidden></p><div class="dialog-actions"><button id="cancelProject" type="button">Cancel</button><button class="primary" id="saveProject" type="submit">Add Project</button></div></form></dialog>
+<dialog id="localDialog" aria-labelledby="localDialogTitle"><h2 id="localDialogTitle">Start the local model?</h2><p>The model uses most of the 16 GB GPU. Stop it before gaming.</p><p id="localError" data-action-error class="task-error" role="alert" hidden></p><div class="dialog-actions"><button id="cancelLocalModel" type="button" autofocus>Cancel</button><button id="confirmLocalModel" class="primary" type="button">Start Model</button></div></dialog>
+<div id="toast" class="toast" role="status" hidden><span id="toastMessage"></span><button id="toastClose" type="button" class="small" hidden>Close</button></div>
+<!-- ws-status:begin -->
+<dialog id="freeGpuDialog" aria-labelledby="freeGpuTitle"><h2 id="freeGpuTitle">Stop the local model?</h2><p>The running local task will stop too.</p><p id="freeGpuError" data-action-error class="task-error" role="alert" hidden></p><div class="dialog-actions"><button id="cancelFreeGpu" type="button" autofocus>Cancel</button><button id="confirmFreeGpu" class="primary" type="button">Stop Model</button></div></dialog>
+<div id="gpuLive" class="sr-only" aria-live="polite"></div><div id="taskLive" class="sr-only" aria-live="polite"></div>
+<!-- ws-status:end -->
+<!-- ws-composer:begin -->
+<!-- ws-composer:end -->
+<!-- ws-sessions:begin -->
+<!-- ws-sessions:end -->
+<!-- ws-a11y:begin -->
+<!-- ws-a11y:end -->
+<script>
+const token='__CSRF_TOKEN__';
+const $=id=>document.getElementById(id);
+let state=null,models=[],submitting=false,toastTimer,jobSignature='',usageSignature='',currentProject='';
+const pending=new Set();
+let clearedDraft=null;
+function sidebar(hidden){document.querySelector('.shell').classList.toggle('sidebar-hidden',hidden);$('toggleSidebar').setAttribute('aria-expanded',String(!hidden));$('toggleSidebar').setAttribute('aria-label',hidden?'Show Sidebar':'Hide Sidebar');$('toggleSidebar').title=hidden?'Show Sidebar':'Hide Sidebar';stored(localStorage,'harness.sidebarHidden',String(hidden))}
+$('toggleSidebar').onclick=()=>sidebar(!document.querySelector('.shell').classList.contains('sidebar-hidden'));
+sidebar(stored(localStorage,'harness.sidebarHidden')==='true');
+function stored(storage,key,value){try{if(value===undefined)return storage.getItem(key);storage.setItem(key,value)}catch{}}
+function draftKey(){return 'harness.draft:'+currentProject}
+function saveDraft(){if(currentProject)stored(sessionStorage,draftKey(),$('prompt').value);$('clearDraft').hidden=!$('prompt').value;if($('prompt').value){clearedDraft=null;$('undoDraft').hidden=true}}
+function restoreDraft(){$('prompt').value=stored(sessionStorage,draftKey())||'';$('clearDraft').hidden=!$('prompt').value;clearedDraft=null;$('undoDraft').hidden=true}
+function setText(id,text){if($(id).textContent!==text)$(id).textContent=text}
+$('prompt').addEventListener('input',saveDraft);
+$('clearDraft').onclick=()=>{clearedDraft={project:currentProject,text:$('prompt').value};$('prompt').value='';saveDraft();$('undoDraft').hidden=false;$('prompt').focus()};
+$('undoDraft').onclick=()=>{if(clearedDraft?.project!==currentProject)return;$('prompt').value=clearedDraft.text;saveDraft();$('prompt').focus()};
+// Team and Research were folded into Claude; a remembered choice of either becomes Claude.
+{const saved=stored(localStorage,'harness.agent');$('agent').value=['coordinator','research'].includes(saved)?'claude':saved||'codex';if(!$('agent').value)$('agent').value='codex'}
+
+const roleNames={codex:'Codex',claude:'Claude',coordinator:'Team',research:'Research',cloud:'Hosted Model',local:'Local Model',doctor:'Health Check'};
+const hints={codex:'Runs with your Codex account.',claude:'Runs with your Claude account.',coordinator:'Claude leads a team of cloud agents.',research:'Claude searches the web and project memory.',cloud:'Runs on your hosted model. Billed by your provider.',local:'Runs on this computer’s GPU.'},accounts={codex:'codex',claude:'claude',coordinator:'claude',research:'claude'};
+const viewNames={workspace:'Workspace',models:'Models',connections:'Connections',diagnostics:'System'};
+function localStatus(){return !state?'unknown':state.local==='ready'?'ready':state.local==='loading'?'starting':'off'}
+function showToast(message,error=false){$('toastMessage').textContent=message;$('toast').classList.toggle('error',error);$('toastClose').hidden=!error;$('toast').hidden=false;clearTimeout(toastTimer);if(error)toastReturn=document.activeElement;else toastTimer=setTimeout(()=>$('toast').hidden=true,7000)}
+async function api(path,body){
+ let res,data;
+ try{res=await fetch('/api/'+path,{method:'POST',headers:{'Content-Type':'application/json','X-Harness-Token':token},body:JSON.stringify(body)})}catch{throw Error('Can’t reach Harness. Check that it’s running, then try again.')}
+ try{data=await res.json()}catch{throw Error('Harness sent an unexpected response (HTTP '+res.status+'). Try again.')}
+ if(!res.ok)throw Error(typeof data?.error==='string'&&data.error?data.error:'Request failed (HTTP '+res.status+'). Try again.');
+ return data
+}
+async function action(button,fn){
+ if(pending.has(button.id))return;
+ const errorBox=button.closest('dialog,.settings-section')?.querySelector('[data-action-error]');
+ if(errorBox)errorBox.hidden=true;
+ pending.add(button.id);button.disabled=true;button.setAttribute('aria-busy','true');
+ try{await fn();await refresh()}
+ catch(error){if(errorBox){errorBox.textContent=error.message;errorBox.hidden=false}else showToast(error.message,true);button.dispatchEvent(new CustomEvent('actionerror',{detail:error}))}
+ finally{pending.delete(button.id);button.disabled=false;button.removeAttribute('aria-busy');updateRun()}
+}
+function view(){const name=Object.hasOwn(viewNames,location.hash.slice(1))?location.hash.slice(1):'workspace';document.querySelectorAll('.view').forEach(el=>el.hidden=el.id!==name);document.querySelectorAll('[data-view]').forEach(el=>{if(el.dataset.view===name)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current')});$('viewCrumb').textContent=viewNames[name];document.title=viewNames[name]+' · Harness'}
+window.addEventListener('hashchange',view);view();
+function projectName(path){return path.replace(/\\/g,'/').split('/').filter(Boolean).pop()||path}
+function updateProject(){const path=$('project').value;$('workspaceTitle').textContent=path?projectName(path):'No Project';$('projectPathDisplay').textContent=path;$('project').title=path}
+$('project').onchange=()=>{saveDraft();currentProject=$('project').value;stored(localStorage,'harness.project',currentProject);restoreDraft();updateProject();renderJobs();updateRun()};
+$('sessionScope').onchange=renderJobs;
+function updateRun(){
+ const role=$('agent').value,active=state?.jobs.find(j=>['running','stopping'].includes(j.state)),ls=localStatus();
+ const needsCloud=role==='cloud'&&!state?.cloud_ready,needsLocal=role==='local'&&ls!=='ready',noProject=!$('project').value;
+ const account=accounts[role],signedOut=!!state&&!!account&&state.auth?.[account]===false;
+ const localMismatch=role==='local'&&$('taskModel').value&&$('taskModel').value!==state?.local_model_file;
+ $('run').disabled=loadingTaskModels||localMismatch||!state||submitting||!!active||needsCloud||needsLocal||noProject||signedOut;$('run').setAttribute('aria-busy',String(submitting));
+ setText('run',submitting?'Starting…':active?'Task running…':'Start Task');
+ let message=hints[role],setup='',href='#connections',mode='link',check=false,inline=false;
+ if(!state)message='Start Task is unavailable while Harness is disconnected.';
+ else if(localMismatch)message='Apply your local model selection before starting it.';
+ else if(active){message=(roleNames[active.role]||active.role)+' is running in '+projectName(active.project)+'. Start another task when it finishes.';setup='View Task';href='#sessionsTitle';mode='task'}
+ else if(noProject){message='Add a project to start a task.';setup='Add Project…';href='#workspace';mode='project'}
+ else if(signedOut){message='Sign in to '+(account==='codex'?'Codex':'Claude')+' to use '+roleNames[role]+'.';setup='Open Connections';check=true}
+ else if(needsCloud){message='Connect a hosted model in Connections first.';setup='Open Connections'}
+ else if(needsLocal){if(ls==='starting')message='The local model is starting. This can take a minute.';else{message='The local model is off.';inline=true}}
+ else if(loadingTaskModels&&!submitting)message='Loading models…';
+ setText('runHint',message);
+ $('agentSetup').hidden=!setup;if(setup){$('agentSetup').href=href;$('agentSetup').dataset.mode=mode;setText('agentSetup',setup)}
+ $('checkAuth').hidden=!check;$('startLocalInline').hidden=!inline;showQuota(quotaWarning(role));
+ $('doctor').disabled=!state||!!active||pending.has('doctor');$('gpuToggle').disabled=!state||pending.has('gpuToggle');syncSave();
+}
+$('agent').onchange=()=>{stored(localStorage,'harness.agent',$('agent').value);loadTaskModels();updateRun()};
+let taskModels=[],modelRequest=0,loadingTaskModels=false;
+function taskPreference(){return 'harness.selection.'+$('agent').value+( $('agent').value==='cloud'?'.'+state?.cloud_provider:'')}
+function saveTaskSelection(){stored(localStorage,taskPreference(),JSON.stringify({model:$('taskModel').value,effort:$('taskEffort').value}))}
+function updateEfforts(preferred=''){
+ const model=taskModels.find(m=>m.id===$('taskModel').value),levels=model?.efforts||[];
+ $('taskEffort').replaceChildren(new Option('Default',''),...levels.filter(v=>['low','medium','high','xhigh','max','ultra'].includes(v)).map(v=>new Option(({low:'Low',medium:'Medium',high:'High',xhigh:'Extra high',max:'Maximum',ultra:'Ultra'})[v],v)));
+ $('taskEffort').value=levels.includes(preferred)?preferred:'';
+ $('taskEffort').disabled=!levels.length;
+ $('effortHint').textContent=levels.length?'More thinking may take longer.':model?'Adjustable effort is not advertised for this model. Uses its default.':'Choose a model to see its effort options.';
+ $('applyLocalModel').hidden=$('agent').value!=='local'||!$('taskModel').value;
+ $('browseModels').hidden=$('agent').value!=='local';
+}
+async function loadTaskModels(){
+ const request=++modelRequest,role=$('agent').value;
+ loadingTaskModels=true;updateRun();$('taskModel').disabled=true;$('taskModelHint').textContent='Loading available models…';
+ taskModels=[];$('taskModel').replaceChildren(new Option('Provider default',''));updateEfforts();
+ try{
+  const data=await api('task-models',{role});if(request!==modelRequest)return;
+  taskModels=data.models;let saved={};try{saved=JSON.parse(stored(localStorage,taskPreference())||'{}')}catch{}
+  $('taskModel').replaceChildren(new Option(role==='local'?'Current local model':role==='cloud'?'Saved connection model':'Provider default',''),...taskModels.map(m=>new Option(m.name,m.id)));
+  const selected=role==='local'?(state?.local_model_file||saved.model):saved.model;
+  if(taskModels.some(m=>m.id===selected))$('taskModel').value=selected;
+  updateEfforts(saved.effort);
+  $('taskModelHint').textContent=role==='local'?'Downloaded models on this PC. Stop the model before switching; selection does not start the GPU.':role==='cloud'?'Models from your connected provider. Manage the connection in Connections.':role==='claude'?'Your Claude plan decides which models you can use. Applies to your next task.':'Selection applies to your next task.';
+ }catch(error){if(request===modelRequest)$('taskModelHint').textContent='Model list unavailable: '+error.message+' You can still use the provider default.'}
+ finally{if(request===modelRequest){loadingTaskModels=false;$('taskModel').disabled=false;updateRun()}}
+}
+$('taskModel').onchange=()=>{updateEfforts();saveTaskSelection();updateRun()};
+$('taskEffort').onchange=saveTaskSelection;
+$('reloadTaskModels').onclick=loadTaskModels;
+$('applyLocalModel').onclick=()=>action($('applyLocalModel'),async()=>showToast((await api('select-local',{model:$('taskModel').value})).message));
+$('agentSetup').addEventListener('click',event=>{if($('agentSetup').dataset.mode==='project'){event.preventDefault();if(!$('projectDialog').open)$('projectDialog').showModal();return}const active=state?.jobs.find(j=>['running','stopping'].includes(j.state));if(!active)return;event.preventDefault();$('sessionScope').value='all';$('sessionSearch').value='';$('sessionFilter').value='active';renderJobs();const row=$('sessions').querySelector('.session');if(row){row.open=true;row.scrollIntoView({block:'center'});row.querySelector('summary').focus({preventScroll:true})}});
+function badge(id,ok,yes='Connected',no='Not connected'){$(id).textContent=ok?yes:no;$(id).classList.toggle('good',!!ok)}
+function jobResult(job){
+ const raw=job.output||'',after=raw.includes('Omnigent session:')?raw.slice(raw.indexOf('Omnigent session:')).split('\n').slice(1).join('\n').trim():'';
+ const plain={failed:'The task didn’t finish. Open Execution Log for details.',stopped:'You stopped this task.',interrupted:'Harness closed before this task finished.',done:'The task finished, but no reply was captured. Open the session to review it.'}[job.state];
+ return job.answer||(['done','running','stopping'].includes(job.state)?after:'')||plain||(['running','stopping'].includes(job.state)?'':'Status: '+job.state);
+}
+function resetTime(seconds){const d=new Date(seconds*1000);return seconds*1000-Date.now()<864e5?d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}):d.toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}
+function renderHomeUsage(){
+ const usage=state.usage||{},signature=JSON.stringify([usage,state.cloud_provider,state.cloud_ready,state.usage_refreshing]);
+ if(signature===usageSignature)return;usageSignature=signature;
+ const focused=document.activeElement?.closest('.usage-account')?.id;
+ function account(id,name,url){const box=$(id);box.replaceChildren();const title=document.createElement('div');title.className='usage-title';const strong=document.createElement('strong');strong.textContent=name;const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noreferrer';link.textContent='View Usage ↗';link.setAttribute('aria-label',name+' usage on provider website');title.append(strong,link);box.append(title);return box}
+ function note(box,text){const p=document.createElement('p');p.textContent=text;box.append(p)}
+ function bar(box,label,value,detail,reset){
+  const row=document.createElement('div');row.className='usage-line';const text=document.createElement('div');text.className='usage-label';const name=document.createElement('span'),amount=document.createElement('span');name.textContent=label;amount.textContent=detail;text.append(name,amount);
+  const low=value<20;if(low)amount.textContent=detail+' · Low';const meter=document.createElement('progress');meter.max=100;meter.value=Math.max(0,Math.min(100,value));meter.setAttribute('aria-label',label+' remaining');meter.setAttribute('aria-valuetext',low?detail+' · Low':detail);meter.classList.toggle('low',low);row.append(text,meter);
+  if(reset){const small=document.createElement('p');small.textContent=reset;row.append(small)}box.append(row)
+ }
+ function windowBars(box,list){
+  const windows=(list||[]).filter(w=>Number.isFinite(Number(w.used))&&w.used!==null);
+  windows.forEach(w=>{const left=Math.max(0,Math.min(100,100-Number(w.used))),label=w.label||(w.minutes===300?'5-hour':w.minutes===10080?'Weekly':w.minutes?w.minutes+' min':w.bucket||'Allowance');const reset=w.resets?'Resets '+resetTime(w.resets):'';bar(box,label,left,Math.round(left)+'% left',reset)});
+  return windows.length>0;
+ }
+ const codex=account('homeCodex','Codex','https://chatgpt.com/codex/settings/usage');
+ if(!windowBars(codex,usage.codex?.windows))note(codex,'Usage unavailable');
+ const claude=account('homeClaude','Claude','https://claude.ai/settings/usage');
+ if(!windowBars(claude,usage.claude?.windows))note(claude,usage.claude?.status==='expired'?'Shows again after your next Claude task.':usage.checked?'Usage unavailable':'Not checked yet');
+ const cloud=account('homeCloud',state.cloud_provider==='openrouter'?'OpenRouter':'OpenCode',state.cloud_provider==='openrouter'?'https://openrouter.ai/settings/credits':'https://opencode.ai/console'),data=usage.cloud;
+ if(data?.status==='available'&&data.provider===state.cloud_provider&&Number(data.limit)>0&&data.remaining!=null){bar(cloud,'Spending limit',100*Number(data.remaining)/Number(data.limit),'$'+Number(data.remaining).toFixed(2)+' left of $'+Number(data.limit).toFixed(2),'Your account balance also applies.')}else note(cloud,state.cloud_ready?'No spending data yet.':'Not connected');
+ setText('homeUsageTime',usage.checked?'Usage updated '+new Date(usage.checked*1000).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})+(state.usage_refreshing?' · refreshing…':''):state.usage_refreshing?'Checking usage…':'');
+ if(focused)$(focused).querySelector('a')?.focus({preventScroll:true});
+}
+function renderJobs(){
+ if(!state)return;
+ const query=$('sessionSearch').value.trim().toLowerCase(),filter=$('sessionFilter').value,scope=$('sessionScope').value;
+ const jobs=state.jobs.filter(job=>(scope==='all'||job.project===$('project').value)&&(filter==='all'||filter==='active'&&['running','stopping'].includes(job.state)||job.state===filter)&&(!query||[job.title,roleNames[job.role],job.project,job.answer,job.state].join(' ').toLowerCase().includes(query)));
+ const key=JSON.stringify([query,filter,scope,$('project').value]);if(key!==sessionKey){sessionKey=key;sessionLimit=12}
+ const signature=JSON.stringify([jobs,key,sessionLimit]);if(signature===jobSignature)return;jobSignature=signature;
+ const container=$('sessions'),existing=[...container.querySelectorAll('.session')];
+ const open=new Map(existing.map(el=>[el.dataset.id,el.open]));
+ const rawOpen=new Map(existing.map(el=>[el.dataset.id,el.querySelector('.raw-details').open]));
+ const active=document.activeElement,focusedRow=active?.closest?.('.session-row'),focused=focusedRow&&active.dataset.focus?{id:focusedRow.dataset.id,kind:active.dataset.focus}:null;
+ const lostStop=!!stopTarget&&(!active||active===document.body||active.id==='stop-'+stopTarget);
+ const scrolls=new Map(existing.map(el=>[el.dataset.id,el.querySelector('.session-answer').scrollTop]));
+ const title=job=>job.title||roleNames[job.role]||job.role,rows=[];
+ jobs.forEach(job=>{const last=rows[rows.length-1],same=last&&['failed','interrupted'].includes(job.state)&&[title(job),job.role,job.project,job.state].join('\n')===[title(last.job),last.job.role,last.job.project,last.job.state].join('\n');if(same)last.count++;else rows.push({job,count:1})});
+ container.replaceChildren();$('taskCount').textContent=String(jobs.length);
+ if(!rows.length){
+  const el=document.createElement('div');el.className='empty';const heading=document.createElement('strong'),description=document.createElement('p'),filtered=query||filter!=='all';
+  heading.textContent=filtered?'No matching sessions':scope==='current'?'No sessions in this project':'No sessions yet';description.textContent=filtered?'Try a different search or status.':scope==='current'?'Start a task above, or show sessions from all projects.':'Start a task above to create a session.';el.append(heading,description);
+  if(filtered){const clear=document.createElement('button');clear.className='small quiet';clear.textContent='Clear Filters';clear.onclick=()=>{$('sessionSearch').value='';$('sessionFilter').value='all';renderJobs()};el.append(clear)}
+  else if(scope==='current'){const all=document.createElement('button');all.className='small quiet';all.textContent='Show All Projects';all.onclick=()=>{$('sessionScope').value='all';renderJobs();$('sessionScope').focus()};el.append(all)}
+  container.append(el);
+ }else{
+  rows.slice(0,sessionLimit).forEach(({job,count})=>{
+   const running=['running','stopping'].includes(job.state),row=document.createElement('div');row.className='session-row'+(job.url?' has-open':'');row.dataset.id=job.id;
+   const el=document.createElement('details');el.className='session';el.dataset.id=job.id;el.dataset.state=job.state;el.open=open.has(job.id)?open.get(job.id):running;
+   const summary=document.createElement('summary');summary.className='session-summary';summary.dataset.focus='summary';
+   const heading=document.createElement('div');heading.className='session-heading';const line=document.createElement('div');line.className='session-line';const name=document.createElement('strong');name.textContent=title(job);line.append(name);
+   if(count>1){const badge=document.createElement('span');badge.className='session-repeat';badge.textContent='×'+count;badge.setAttribute('role','img');badge.setAttribute('aria-label',count+' times');line.append(badge)}
+   const meta=document.createElement('span');meta.className='session-project';const parts=[];if(job.title)parts.push(roleNames[job.role]||job.role);if(scope==='all'&&job.project)parts.push(projectName(job.project));if(job.requested_model||job.requested_effort)parts.push(job.requested_model?.split('/').pop()||'Default model',job.requested_effort||'Default effort');
+   meta.textContent=parts.concat('').join(' · ');
+   const time=document.createElement('time');time.className='session-time';const date=new Date(job.started*1000);if(Number.isFinite(date.getTime())){time.dateTime=date.toISOString();time.title=date.toLocaleString();time.dataset.started=job.started;time.textContent=sessionAge(job.started)}meta.append(time);heading.append(line,meta);
+   const status=document.createElement('span');status.className='session-state';status.textContent=({done:'Completed',running:'Running',stopping:'Stopping',stopped:'Stopped',failed:'Failed',interrupted:'Interrupted'}[job.state]||job.state);
+   const arrow=document.createElement('span');arrow.className='chevron';arrow.textContent='›';arrow.setAttribute('aria-hidden','true');
+   summary.append(heading,status,arrow);
+   const body=document.createElement('div');body.className='session-body';
+   if(running){const actions=document.createElement('div');actions.className='session-actions';const stop=document.createElement('button');stop.className='small danger';stop.id='stop-'+job.id;stop.dataset.focus='stop';stop.disabled=pending.has(stop.id);stop.textContent='Stop Task';stop.onclick=()=>{stopTarget=job.id;action(stop,async()=>showToast((await api('stop',{id:job.id})).message))};actions.append(stop);body.append(actions)}
+   const result=document.createElement('div');result.className='session-answer';const text=jobResult(job);
+   if(text)result.textContent=text;
+   else{
+    result.classList.add('is-running');const phase=document.createElement("span");phase.className="session-running";
+    if(job.state==='running'){phase.dataset.elapsed=job.started;phase.textContent='Running · '+elapsedText(Date.now()/1000-job.started)}else phase.textContent="Stopping…";
+    result.append(phase);const latest=(job.output||'').split('\n').map(s=>s.trim()).filter(Boolean).pop();
+    if(latest){const last=document.createElement('span');last.className='session-latest';last.textContent=latest;result.append(last)}
+    const bar=document.createElement('progress');bar.className='session-progress';bar.setAttribute('aria-label','Task in progress');result.append(bar);
+   }
+   const details=document.createElement('details');details.className='raw-details';details.open=rawOpen.get(job.id)||false;const logTitle=document.createElement('summary');logTitle.textContent='Execution Log';logTitle.dataset.focus='log';const pre=document.createElement('pre');pre.className='output';pre.textContent=job.output||'';details.append(logTitle,pre);body.append(result,details);el.append(summary,body);row.append(el);
+   if(job.url){const link=document.createElement('a');link.className='session-open';link.href=job.url;link.target='_blank';link.rel='noreferrer';link.dataset.focus='open';link.setAttribute('aria-label','Open '+title(job)+' session in a new tab');const glyph=document.createElement('span');glyph.setAttribute('aria-hidden','true');glyph.textContent='↗';link.append('Open ',glyph);row.append(link)}
+   container.append(row);result.scrollTop=scrolls.get(job.id)||0;
+   if(focused?.id===job.id)row.querySelector('[data-focus="'+focused.kind+'"]')?.focus({preventScroll:true});
+  });
+  if(rows.length>sessionLimit){const more=document.createElement('button');more.id='showMoreSessions';more.className='quiet';more.type='button';more.textContent='Show '+Math.min(12,rows.length-sessionLimit)+' More';more.onclick=()=>{const first=sessionLimit;sessionLimit+=12;renderJobs();$('sessions').querySelectorAll('.session-row')[first]?.querySelector('.session-summary').focus()};container.append(more)}
+ }
+ if(lostStop){const id=stopTarget,button=$('stop-'+id);if(!button){stopTarget='';(container.querySelector('.session-row[data-id="'+CSS.escape(id)+'"] .session-summary')||$('prompt')).focus({preventScroll:true})}else if(!button.disabled){stopTarget='';button.focus({preventScroll:true})}}
+}
+$('sessionSearch').oninput=renderJobs;$('sessionFilter').onchange=renderJobs;
+async function refresh(){
+ const first=++refreshCount===1;
+ try{const response=await fetch('/api/status');if(!response.ok)throw Error('Harness unavailable');state=await response.json()}
+ catch{disconnected();return false}
+ lastGood=Date.now();$('connectionError').hidden=true;$('main').removeAttribute('data-stale');setText('panelStatus','Connected');$('panelStatus').previousElementSibling.dataset.connected='true';
+ renderLocal();
+ badge('codexStatus',state.auth.codex);badge('claudeStatus',state.auth.claude);badge('memoryStatus',state.memory,'Configured');badge('cloudStatus',state.cloud_ready,'Key saved');
+ const paths=state.projects.projects,selected=$('project').value||stored(localStorage,'harness.project')||state.projects.selected;
+ if(JSON.stringify(paths)!==$('project').dataset.paths){$('project').replaceChildren(...paths.map(path=>{const option=new Option(projectName(path),path);option.title=path;return option}));$('project').dataset.paths=JSON.stringify(paths)}
+ $('project').value=paths.includes(selected)?selected:state.projects.selected;if(currentProject!==$('project').value){currentProject=$('project').value;restoreDraft()}updateProject();
+ renderHomeUsage();renderJobs();$('versions').replaceChildren(...Object.entries(state.versions).map(([name,value])=>{const d=document.createElement('div'),a=document.createElement('span'),b=document.createElement('span');a.textContent=name.split('/').pop().replace('pi-coding-agent','Pi');b.textContent=value;d.append(a,b);return d}));updateRun();
+ trackJobs();renderModels();
+ if(first)initDone=true;else if(!initDone){initDone=true;bootInit()}
+ return true;
+}
+$('taskForm').onsubmit=async event=>{
+ event.preventDefault();if($('run').disabled)return;
+ const project=$('project').value,prompt=$('prompt').value;
+ $('taskError').hidden=true;submitting=true;updateRun();
+ try{
+  await api('run',{role:$('agent').value,project,prompt,model:$('taskModel').value,effort:$('taskEffort').value});
+  if(currentProject===project&&$('prompt').value===prompt){$('prompt').value='';saveDraft()}
+  $('sessionScope').value='current';$('sessionSearch').value='';$('sessionFilter').value='all';
+  await refresh();$('sessionsTitle').scrollIntoView({block:'nearest'});
+ }catch(error){$('taskError').textContent=error.message;$('taskError').hidden=false}
+ finally{submitting=false;updateRun()}
+};
+$('prompt').onkeydown=event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'&&!event.isComposing){event.preventDefault();$('taskForm').requestSubmit()}};
+$('shortcut').textContent=/Mac|iPhone|iPad/.test(navigator.platform)?'⌘ ↵':'Ctrl ↵';
+$('gpuToggle').onclick=()=>{
+ if(!state)return;
+ if(state.local==='off'){$('localDialog').showModal();return}
+ action($('gpuToggle'),async()=>showToast((await api('local',{action:'stop'})).message))
+};
+$('cancelLocalModel').onclick=()=>$('localDialog').close();
+$('localDialog').addEventListener('cancel',event=>{if(pending.has('confirmLocalModel'))event.preventDefault()});
+$('confirmLocalModel').onclick=async()=>{$('cancelLocalModel').disabled=true;try{await action($('confirmLocalModel'),async()=>{await api('local',{action:'start'});$('localDialog').close()})}finally{$('cancelLocalModel').disabled=false}};
+$('addProject').onclick=()=>{$('projectError').hidden=true;clearProjectInvalid();$('projectDialog').showModal()};$('cancelProject').onclick=()=>$('projectDialog').close();
+$('projectForm').onsubmit=event=>{event.preventDefault();action($('saveProject'),async()=>{await api('project',{path:$('projectPath').value,id:$('projectId').value});$('projectDialog').close();$('project').dataset.paths='';$('project').replaceChildren();showToast('Project added.')})};
+function providerChanged(){
+ const open=$('provider').value==='openrouter';$('providerHint').textContent=open?'OpenRouter bills model requests.':'Requires a paid OpenCode Console API key.';
+ $('getKey').href=open?'https://openrouter.ai/settings/keys':'https://opencode.ai/console';$('providerAccount').href=open?'https://openrouter.ai/settings/credits':'https://opencode.ai/console';
+ $('keyHint').textContent=state?.providers[$('provider').value]?.has_key?'Leave blank to keep the saved key.':'Saved privately on this computer.';
+ $('modelList').replaceChildren();models=[];
+}
+$('provider').onchange=()=>{providerChanged();$('model').value='';$('apiKey').value=''};
+$('model').onchange=()=>{const model=models.find(m=>m.id===$('model').value);if(model){const p=model.pricing;let text=model.context.toLocaleString()+' tokens available.';if(p.prompt!=null&&p.completion!=null)text+=' Per 1M tokens: $'+(Number(p.prompt)*1e6).toFixed(2)+' input / $'+(Number(p.completion)*1e6).toFixed(2)+' output.';$('modelHint').textContent=text}};
+$('loadModels').onclick=()=>action($('loadModels'),async()=>{if($('apiKey').value)await api('provider',{provider:$('provider').value,key:$('apiKey').value,model:$('model').value});$('apiKey').value='';models=(await api('models',{provider:$('provider').value})).models;$('modelList').replaceChildren(...models.map(m=>new Option(m.name,m.id)));$('modelHint').textContent=models.length+' models loaded. Search by name or ID.';showToast('Model list loaded.')});
+$('saveProvider').onclick=()=>action($('saveProvider'),async()=>{const model=models.find(m=>m.id===$('model').value);showToast((await api('provider',{provider:$('provider').value,key:$('apiKey').value,model:$('model').value,context:model?.context||65536})).message);$('apiKey').value='';providerChanged()});
+$('refreshAccounts').onclick=()=>action($('refreshAccounts'),async()=>showToast((await api('accounts',{})).message));
+$('doctor').onclick=()=>action($('doctor'),async()=>{await api('run',{role:'doctor',project:$('project').value});location.hash='workspace'});
+// ws-copy:begin
+function syncSave(){$('saveProvider').disabled=!state||pending.has('saveProvider')||!($('apiKey').value||$('provider').value!==state.cloud_provider||$('model').value!==state.cloud_model)}
+['provider','apiKey','model'].forEach(id=>{$(id).addEventListener('input',syncSave);$(id).addEventListener('change',syncSave)});
+// ws-copy:end
+// ws-status:begin
+let refreshCount=0,lastGood=0,initDone=false,prevLocal=null,prevJobs=null;
+const TITLE_MARK=/^(✓ Done|Failed) · /;
+function say(id,text){const el=$(id);clearTimeout(el._t);el.textContent='';el._t=setTimeout(()=>{el.textContent=text},60)}
+const spinner=document.createElement('span');spinner.className='gpu-spinner';spinner.setAttribute('aria-hidden','true');$('topGpu').firstElementChild.after(spinner);
+const freeGpu=document.createElement('button');freeGpu.id='freeGpu';freeGpu.type='button';freeGpu.className='small';freeGpu.hidden=true;freeGpu.textContent='Free GPU';freeGpu.title='Stop the local model and free the GPU';$('topGpu').after(freeGpu);
+function renderLocal(){
+ const status=localStatus(),on=status==='starting'||status==='ready';
+ $('topGpu').dataset.state=status;
+ setText('gpuSummary',{off:'Local model off',starting:'Local model starting…',ready:'Local model ready',unknown:'Local model status unknown'}[status]);
+ setText('gpuState',{off:'Off',starting:'Starting…',ready:'Ready',unknown:'Unknown'}[status]);
+ $('gpuToggle').classList.remove('danger');
+ if(status!=='unknown')setText('gpuToggle',on?'Stop Local Model':'Start Local Model…');
+ $('gpuToggle').disabled=status==='unknown'||pending.has('gpuToggle');
+ setText('gpuHint',on?'The model is using GPU memory. Stop it before gaming.':status==='unknown'?'Harness can’t check the local model right now.':'Uses most of the 16 GB GPU. Stop it before gaming.');
+ $('freeGpu').hidden=!on;
+ if(status!=='unknown'){
+  if(prevLocal&&prevLocal!==status){
+   if(status==='ready')say('gpuLive','Local model ready.');
+   else if(status==='off')say('gpuLive','Local model stopped. The GPU is free.');
+  }
+  prevLocal=status;
+ }
+}
+function disconnected(){
+ state=null;
+ $('panelStatus').textContent='Disconnected';$('panelStatus').previousElementSibling.dataset.connected='false';
+ if(lastGood){
+  setText('connectionMessage','Can’t reach Harness. Showing information from '+new Date(lastGood).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})+'.');
+  $('main').dataset.stale='true';
+ }else{
+  setText('connectionMessage','Can’t reach Harness.');
+  $('project').replaceChildren(new Option('Unavailable',''));$('project').dataset.paths='';
+  setText('homeUsageTime','Usage unavailable');
+  ['codexStatus','claudeStatus','memoryStatus','cloudStatus'].forEach(id=>{$(id).textContent='Unavailable';$(id).classList.remove('good')});
+  const empty=document.createElement('div'),title=document.createElement('strong'),text=document.createElement('p');empty.className='empty';title.textContent='Sessions unavailable';text.textContent='Harness isn’t responding.';empty.append(title,text);$('sessions').replaceChildren(empty);jobSignature='';
+ }
+ $('connectionError').hidden=false;
+ renderLocal();updateRun();$('gpuToggle').disabled=true;
+}
+$('retryConnection').onclick=async()=>{
+ const button=$('retryConnection');if(button.getAttribute('aria-busy')==='true')return;
+ button.setAttribute('aria-busy','true');
+ try{if(await refresh()&&document.activeElement===button)$('main').focus({preventScroll:true})}finally{button.removeAttribute('aria-busy')}
+};
+function bootInit(){$('provider').value=state.cloud_provider;$('model').value=state.cloud_model;providerChanged();loadTaskModels()}
+async function stopModel(button){
+ await action(button,async()=>{showToast((await api('local',{action:'stop'})).message);if($('freeGpuDialog').open)$('freeGpuDialog').close()});
+ if($('freeGpu').hidden&&(document.activeElement===document.body||document.activeElement===button))$('topGpu').focus();
+}
+$('freeGpu').onclick=()=>{
+ if(state?.jobs.some(j=>j.role==='local'&&['running','stopping'].includes(j.state))){$('freeGpuError').hidden=true;$('freeGpuDialog').showModal();return}
+ stopModel($('freeGpu'));
+};
+$('cancelFreeGpu').onclick=()=>$('freeGpuDialog').close();
+$('freeGpuDialog').addEventListener('cancel',event=>{if(pending.has('confirmFreeGpu'))event.preventDefault()});
+$('confirmFreeGpu').onclick=async()=>{$('cancelFreeGpu').disabled=true;try{await stopModel($('confirmFreeGpu'))}finally{$('cancelFreeGpu').disabled=false}};
+function trackJobs(){
+ const done=[],failed=[];
+ if(prevJobs)for(const job of state.jobs){const was=prevJobs.get(job.id);if(['running','stopping'].includes(was)){if(job.state==='done')done.push(job);else if(job.state==='failed')failed.push(job)}}
+ prevJobs=new Map(state.jobs.map(job=>[job.id,job.state]));
+ if(!done.length&&!failed.length)return;
+ const name=job=>job.title||roleNames[job.role]||job.role;
+ document.title=(failed.length?'Failed · ':'✓ Done · ')+document.title.replace(TITLE_MARK,'');
+ say('taskLive',[...failed.map(job=>'Task failed: '+name(job)+'.'),...done.map(job=>'Task finished: '+name(job)+'.')].join(' '));
+}
+function clearTitleMark(){if(TITLE_MARK.test(document.title))document.title=document.title.replace(TITLE_MARK,'')}
+document.addEventListener('keydown',clearTitleMark,true);document.addEventListener('pointerdown',clearTitleMark,true);
+renderLocal();
+// ws-status:end
+// ws-composer:begin
+function quotaTime(seconds){return resetTime(seconds)}
+function quotaWarning(role){
+ if(!state)return '';
+ if(role==='codex'||role==='claude'){
+  const ws=(state.usage?.[role]?.windows||[]).filter(w=>w.used!==null&&w.used!==undefined&&Number.isFinite(Number(w.used)));if(!ws.length)return '';
+  const account=role==='codex'?'Codex':'Claude',w=ws.reduce((a,b)=>Number(b.used)>Number(a.used)?b:a),left=100-Number(w.used),name=w.label?w.label:w.minutes===300?'5-hour':w.minutes===10080?'weekly':w.minutes?w.minutes+'-minute':'';
+  if(left<=0)return account+'’s '+(name?name+' ':'')+'allowance is used up.'+(w.resets?' It resets at '+quotaTime(w.resets)+'.':'');
+  if(left<20)return account+' has '+Math.round(left)+'% of its '+(name?name+' ':'')+'allowance left.';
+  return '';
+ }
+ if(role==='cloud'){
+  const d=state.usage?.cloud,limit=Number(d?.limit),left=Number(d?.remaining);
+  if(d?.status!=='available'||d.provider!==state.cloud_provider||!(limit>0)||d.remaining==null||!Number.isFinite(left))return '';
+  const name=state.cloud_provider==='openrouter'?'OpenRouter':'OpenCode';
+  if(left<=0)return 'Your '+name+' spending limit is used up.';
+  if(100*left/limit<20)return 'Your '+name+' spending limit is almost used up ($'+left.toFixed(2)+' left).';
+ }
+ return '';
+}
+function showQuota(text){setText('quotaWarning',text);$('quotaWarning').hidden=!text}
+$('checkAuth').onclick=()=>action($('checkAuth'),()=>api('accounts',{}));
+$('startLocalInline').onclick=()=>{if(!$('localDialog').open)$('localDialog').showModal()};
+// ws-composer:end
+// ws-sessions:begin
+let sessionLimit=12,sessionKey='',stopTarget='';
+function elapsedText(s){s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+' hr '+m+' min':m?m+' min '+s%60+' s':s+' s'}
+function sessionAge(started){const date=new Date(started*1000),now=new Date(),s=Math.max(0,(now-date)/1000),yesterday=new Date(now);yesterday.setDate(now.getDate()-1);return s<45?'Just now':s<3600?Math.max(1,Math.floor(s/60))+' min ago':s<86400?Math.floor(s/3600)+' hr ago':date.toDateString()===yesterday.toDateString()?'Yesterday':date.toLocaleDateString(undefined,{month:'short',day:'numeric'})}
+document.addEventListener('pointerdown',()=>{stopTarget=''},true);document.addEventListener('keydown',()=>{stopTarget=''},true);
+setInterval(()=>{if(document.hidden)return;const now=Date.now()/1000;document.querySelectorAll('[data-elapsed]').forEach(el=>sessionText(el,'Running · '+elapsedText(now-Number(el.dataset.elapsed))));document.querySelectorAll('.session-time[data-started]').forEach(el=>sessionText(el,sessionAge(Number(el.dataset.started))))},1000);
+function sessionText(el,text){if(el.textContent!==text)el.textContent=text}
+// ws-sessions:end
+// ws-a11y:begin
+let toastReturn;
+$('toastClose').onclick=()=>{const back=toastReturn;$('toast').hidden=true;if(back?.isConnected&&back.checkVisibility())back.focus();else $('main').focus()};
+function clearProjectInvalid(){$('projectPath').removeAttribute('aria-invalid');$('projectPath').setAttribute('aria-describedby','projectPathHint')}
+$('projectPath').addEventListener('input',clearProjectInvalid);
+$('saveProject').addEventListener('actionerror',()=>{$('projectPath').setAttribute('aria-invalid','true');$('projectPath').setAttribute('aria-describedby','projectPathHint projectError');$('projectPath').focus()});
+function backdropClose(dialog,canClose){
+ const outside=event=>{const box=dialog.getBoundingClientRect();return event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom};
+ let pressed=false;
+ dialog.addEventListener('pointerdown',event=>{pressed=event.target===dialog&&outside(event)});
+ dialog.addEventListener('click',event=>{const started=pressed;pressed=false;if(started&&event.target===dialog&&outside(event)&&canClose())dialog.close()});
+}
+backdropClose($('projectDialog'),()=>!pending.has('saveProject'));
+backdropClose($('localDialog'),()=>!pending.has('confirmLocalModel'));
+// ws-a11y:end
+// ws-models:begin
+const fitText={fits:'Fits GPU',tight:'Tight fit',too_large:'Too large for GPU'};
+let librarySignature='',downloadKey='',dismissedDownload='',discoverRequest=0,discoverLoaded=false,repos=[],shownRepo=null,repoFiles=[],filesRequest=0;
+function gb(bytes){return (Number(bytes)/1e9).toFixed(1)+' GB'}
+function compact(n){return new Intl.NumberFormat(undefined,{notation:'compact'}).format(Number(n)||0)}
+function node(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+function pill(kind,text){return node('span','pill '+kind,text)}
+function modelTab(name,focus){
+ const library=name!=='discover';
+ $('tabLibrary').setAttribute('aria-selected',String(library));$('tabDiscover').setAttribute('aria-selected',String(!library));
+ $('tabLibrary').tabIndex=library?0:-1;$('tabDiscover').tabIndex=library?-1:0;$('library').hidden=!library;$('discover').hidden=library;
+ stored(localStorage,'harness.modelTab',library?'library':'discover');
+ if(focus)$(library?'tabLibrary':'tabDiscover').focus();
+ discoverIfShown();
+}
+// Search Hugging Face only once Discover is actually on screen.
+function discoverIfShown(){if(!discoverLoaded&&!$('models').hidden&&!$('discover').hidden)searchModels()}
+window.addEventListener('hashchange',discoverIfShown);
+$('tabLibrary').onclick=()=>modelTab('library');$('tabDiscover').onclick=()=>modelTab('discover');
+$('tabLibrary').parentElement.addEventListener('keydown',event=>{
+ const target={ArrowLeft:null,ArrowRight:null,Home:'library',End:'discover'}[event.key];if(target===undefined)return;event.preventDefault();
+ modelTab(target||($('tabLibrary').getAttribute('aria-selected')==='true'?'discover':'library'),true);
+});
+function renderModels(){if(state){renderLibrary();renderDownload()}}
+function renderLibrary(){
+ const list=state.local_models||[],status=localStatus(),running=status==='starting'||status==='ready';
+ const signature=JSON.stringify([list,state.local_model_file,running]);if(signature===librarySignature)return;librarySignature=signature;
+ setText('libraryCount',String(list.length));
+ setText('libraryHint',!list.length?'':running?'Stop the local model before switching to another one.':'The Local Model agent uses the model marked In use. Starting it is a separate step in System.');
+ const container=$('libraryList'),focused=document.activeElement?.closest?.('#libraryList')?document.activeElement.id:'';
+ if(!list.length){
+  const empty=node('div','empty'),find=node('button','small quiet','Discover Models');find.type='button';find.onclick=()=>{modelTab('discover');$('discoverQuery').focus()};
+  empty.append(node('strong',null,'No models downloaded yet'),node('p',null,'Find one in Discover. Downloads are saved to ~/models.'),find);container.replaceChildren(empty);return;
+ }
+ container.replaceChildren(...list.map((model,i)=>{
+  const row=node('div','model-row'),info=node('div'),meta=node('div','model-meta'),active=model.id===state.local_model_file;
+  if(active)meta.append(pill('active','In use'));
+  meta.append(node('span',null,[model.quant,gb(model.size)].filter(Boolean).join(' · ')));if(model.fit)meta.append(pill(model.fit,fitText[model.fit]));
+  info.append(node('div','model-name',model.name),meta);
+  const use=node('button','small',active?'In Use':'Use This Model');use.type='button';use.id='use-model-'+i;use.disabled=active||running||pending.has(use.id);
+  use.setAttribute('aria-label',active?model.name+' is in use':'Use '+model.name);
+  use.onclick=()=>action(use,async()=>showToast((await api('select-local',{model:model.id})).message));
+  row.append(info,use);return row;
+ }));
+ if(focused&&$(focused))$(focused).focus({preventScroll:true});
+}
+function renderDownload(){
+ const d=state.download,key=d?d.file+':'+d.state:'';
+ if(key!==downloadKey){
+  const before=downloadKey;downloadKey=key;
+  if(d&&before.startsWith(d.file+':downloading')){
+   if(d.state==='done'){say('taskLive','Download finished: '+d.name+'.');librarySignature='';if(shownRepo?.id===d.repo)openRepo(shownRepo)}
+   else if(d.state==='failed')say('taskLive','Download failed: '+d.name+'.');
+  }
+  if(shownRepo&&repoFiles.length)renderRepo(shownRepo);
+ }
+ const visible=!!d&&d.state!=='cancelled'&&key!==dismissedDownload;$('downloadPanel').hidden=!visible;if(!visible)return;
+ const running=d.state==='downloading',failed=d.state==='failed',left=Math.max(0,d.size-d.done),eta=d.speed>0?Math.ceil(left/d.speed/60):0;
+ setText('downloadName',(running?'Downloading ':failed?'Download stopped: ':'Downloaded ')+d.name+(d.quant&&!d.name.toUpperCase().includes(d.quant)?' · '+d.quant:''));
+ $('downloadBar').hidden=!running&&!failed;$('downloadBar').value=d.size?Math.min(100,100*d.done/d.size):0;
+ setText('downloadText',running?gb(d.done)+' of '+gb(d.size)+(d.speed>0?' · '+(d.speed/1e6).toFixed(1)+' MB/s · about '+(eta>90?Math.round(eta/60)+' hr':eta+' min')+' left':' · connecting…'):failed?d.error+' Progress is kept.':'Saved to ~/models. Choose it in the Downloaded tab.');
+ setText('downloadAction',running?'Cancel':failed?'Retry':'Show Model');$('downloadAction').classList.toggle('danger',running);$('downloadClose').hidden=running;
+}
+$('downloadAction').onclick=()=>{
+ const d=state?.download;if(!d)return;
+ if(d.state==='downloading')action($('downloadAction'),async()=>showToast((await api('download-cancel',{})).message));
+ else if(d.state==='failed')action($('downloadAction'),async()=>showToast((await api('download',{repo:d.repo,file:d.file})).message));
+ else{dismissedDownload=downloadKey;$('downloadPanel').hidden=true;modelTab('library',true)}
+};
+$('downloadClose').onclick=()=>{dismissedDownload=downloadKey;$('downloadPanel').hidden=true;$('tabLibrary').getAttribute('aria-selected')==='true'?$('tabLibrary').focus():$('tabDiscover').focus()};
+async function searchModels(){
+ const request=++discoverRequest,query=$('discoverQuery').value.trim();discoverLoaded=true;
+ setText('discoverHint',query?'Searching…':'Loading popular models…');$('discoverButton').disabled=true;
+ try{
+  const data=await api('discover',{query});if(request!==discoverRequest)return;repos=data.models;renderRepos();
+  setText('discoverHint',!repos.length?'No GGUF models match “'+query+'”.':query?repos.length+' results for “'+query+'”, most downloaded first.':'Most downloaded GGUF models on Hugging Face.');
+ }catch(error){if(request===discoverRequest){discoverLoaded=false;setText('discoverHint','Search unavailable: '+error.message)}}
+ finally{if(request===discoverRequest)$('discoverButton').disabled=false}
+}
+$('discoverForm').onsubmit=event=>{event.preventDefault();searchModels()};
+function renderRepos(){
+ $('repoList').replaceChildren(...repos.map(repo=>{
+  const [owner,name]=repo.id.split('/'),button=node('button','repo'),meta=node('span','model-meta');button.type='button';
+  button.setAttribute('aria-pressed',String(repo.id===shownRepo?.id));
+  meta.append(node('span',null,owner),node('span',null,compact(repo.downloads)+' downloads'),node('span',null,compact(repo.likes)+' likes'));if(repo.gated)meta.append(pill('tight','Gated'));
+  button.append(node('strong',null,name),meta);button.onclick=()=>openRepo(repo);return button;
+ }));
+}
+async function openRepo(repo){
+ const request=++filesRequest,changed=shownRepo?.id!==repo.id;shownRepo=repo;renderRepos();
+ if(changed){repoFiles=[];$('repoDetail').replaceChildren(node('h2',null,repo.id.split('/')[1]),node('p','hint','Loading downloads…'))}
+ try{const data=await api('model-files',{repo:repo.id});if(request!==filesRequest)return;repoFiles=data.files;renderRepo(repo)}
+ catch(error){if(request===filesRequest)$('repoDetail').replaceChildren(node('h2',null,repo.id.split('/')[1]),node('p','task-error','Downloads unavailable: '+error.message))}
+}
+function renderRepo(repo){
+ const [owner,name]=repo.id.split('/'),links=node('div','links'),page=node('a',null,'View on Hugging Face ↗'),d=state?.download,busy=d?.state==='downloading';
+ page.href='https://huggingface.co/'+repo.id;page.target='_blank';page.rel='noreferrer';links.append(page);
+ const about=[owner,repo.task&&repo.task.replace(/-/g,' '),repo.updated&&'Updated '+new Date(repo.updated).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})].filter(Boolean).join(' · ');
+ const parts=[node('h2',null,name),node('p','hint',about),links];
+ if(repo.gated)parts.push(node('p','task-error','This model requires accepting its terms on Hugging Face, so Harness can’t download it.'));
+ if(!repoFiles.length)parts.push(node('p','hint','No complete GGUF downloads in this repository.'));
+ else parts.push(node('p','hint','Fit assumes the 16 GB GPU at the current 36K context. Smaller files use less memory and lose some quality.'));
+ repoFiles.forEach((file,i)=>{
+  const row=node('div','model-row'),info=node('div'),meta=node('div','model-meta'),current=busy&&d.file===file.file&&d.repo===repo.id;
+  meta.append(node('span',null,gb(file.size)+(file.paths.length>1?' · '+file.paths.length+' parts':'')),pill(file.fit,fitText[file.fit]));
+  info.append(node('div','model-name',file.quant||file.name),meta);if(file.quant)info.title=file.name;
+  const get=node('button',file.downloaded?'small':'small primary',file.downloaded?'Downloaded':current?'Downloading…':'Download');get.type='button';get.id='download-'+i;
+  get.disabled=file.downloaded||busy||repo.gated||pending.has(get.id);get.setAttribute('aria-label',(file.downloaded?'Downloaded: ':'Download ')+file.name+', '+gb(file.size));
+  get.onclick=()=>action(get,async()=>{showToast((await api('download',{repo:repo.id,file:file.file})).message);dismissedDownload=''});
+  row.append(info,get);parts.push(row);
+ });
+ $('repoDetail').replaceChildren(...parts);
+}
+if(stored(localStorage,'harness.modelTab')==='discover')modelTab('discover');
+// ws-models:end
+refresh().then(ok=>{if(ok){$('provider').value=state.cloud_provider;$('model').value=state.cloud_model;providerChanged();loadTaskModels()}});setInterval(()=>{if(!document.hidden)refresh()},3000);
+</script>
+</body>
+</html>

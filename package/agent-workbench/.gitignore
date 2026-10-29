@@ -1,0 +1,9 @@
+.venv/
+.tools/
+.runtime/
+__pycache__/
+*.pyc
+secrets.json
+.env
+*.gguf
+verification.json

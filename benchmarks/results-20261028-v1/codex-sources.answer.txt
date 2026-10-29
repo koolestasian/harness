@@ -1,0 +1,1 @@
+{"recommendation":"cloud_default_manual_local","active_decision":"Cloud agents by default; local model manual only; never use local inference as an automatic fallback while gaming.","observed_context":36864,"generation_tps_range":[28,31],"claimed_long_context_quality":false,"freshness_verified":true,"evidence":["SRC-A","SRC-B","SRC-C"]}

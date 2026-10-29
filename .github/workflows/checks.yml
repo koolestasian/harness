@@ -1,0 +1,33 @@
+name: Checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned application dependencies
+        run: pip install --require-hashes -r package/agent-workbench/requirements.lock
+      - name: Run isolated unit tests (no inference)
+        working-directory: package/agent-workbench
+        run: python -m unittest discover -s tests
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright==1.64.1
+      - run: python -m playwright install --with-deps chromium
+      - name: Check responsive interface with mocked APIs
+        run: python scripts/check-ui.py
+      - name: Check UI acceptance criteria
+        run: python scripts/check-ui-fixes.py --only status,composer,sessions,a11y,copy

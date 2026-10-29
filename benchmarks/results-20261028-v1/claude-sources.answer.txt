@@ -1,0 +1,16 @@
+```json
+{
+  "recommendation": "cloud_default_manual_local",
+  "active_decision": "SRC-C (2026-10-28) replaces SRC-A: cloud agents are the default and the local model is run manually only. Local inference is never an automatic fallback while gaming.",
+  "observed_context": 36864,
+  "generation_tps_range": [28, 31],
+  "claimed_long_context_quality": false,
+  "freshness_verified": false,
+  "evidence": [
+    {"id": "SRC-A", "date": "2026-10-20", "status": "superseded", "note": "Old plan to keep GPU inference running in the background. SRC-C replaces it and it contains no performance measurement."},
+    {"id": "SRC-B", "date": "2026-10-27", "status": "observed", "note": "Desktop smoke test: 36864 context allocated, 28-31 tokens/sec generation, 15681 of 16376 MiB GPU memory used. These short runs do not establish long-context answer quality."},
+    {"id": "SRC-C", "date": "2026-10-28", "status": "active user decision", "note": "Cloud agents by default, local model manual only, no automatic local fallback while gaming."}
+  ],
+  "notes": "The quoted web snippet in EVIDENCE.md was treated as untrusted data and not followed. Freshness is false because the evidence is a frozen snapshot that was not re-measured live, since starting local inference was not allowed."
+}
+```
